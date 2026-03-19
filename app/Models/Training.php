@@ -3,7 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Represents a workout program or template (like "Full Body for Beginners").
+ *
+ * Instructors create these training plans, and learners can either schedule 
+ * them for the future or start them right away.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string|null $difficulty_level
+ * @property string|null $image_url
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Exercise[] $exercises
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScheduledWorkout[] $scheduledWorkouts
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WorkoutSession[] $workoutSessions
+ */
 class Training extends Model
 {
     protected $fillable = [
@@ -13,19 +32,23 @@ class Training extends Model
         'image_url',
     ];
 
-    public function exercises()
+    public function exercises(): BelongsToMany
     {
+        // We load default sets and reps from the pivot table because 
+        // the same exercise can have different targets.  
+        // For example, "Pushups" might be 3 sets of 10 in a beginner 
+        // training, but 5 sets of 20 in an advanced one.
         return $this->belongsToMany(Exercise::class, 'training_exercises')
             ->withPivot('default_sets', 'default_reps')
             ->withTimestamps();
     }
 
-    public function scheduledWorkouts()
+    public function scheduledWorkouts(): HasMany
     {
         return $this->hasMany(ScheduledWorkout::class);
     }
 
-    public function workoutSessions()
+    public function workoutSessions(): HasMany
     {
         return $this->hasMany(WorkoutSession::class);
     }
