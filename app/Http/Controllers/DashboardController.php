@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Handles the data needed for the user's main home screen.
+ * * This controller gathers biometrics, today's schedule, active 
+ * announcements, and recent activity to give the user a complete 
+ * snapshot of their fitness journey as soon as they log in.
+ */
 class DashboardController extends Controller
 {
     public function overview(Request $request): JsonResponse
@@ -18,7 +25,8 @@ class DashboardController extends Controller
             ->with('training')
             ->first();
 
-        $globalAnnouncement = \App\Models\Announcement::where('is_active', true)
+        // We grab only the latest active announcement.
+        $globalAnnouncement = Announcement::where('is_active', true)
             ->select('title', 'message')
             ->first();
 
@@ -50,6 +58,8 @@ class DashboardController extends Controller
         $today = Carbon::today();
         $nextWeek = Carbon::today()->addDays(6);
 
+        // We fetch the next 7 days of workouts and key them by date. 
+        // This makes it much faster to look them up inside the loop below.
         $schedules = $user->scheduledWorkouts()
             ->whereBetween('date', [$today->toDateString(), $nextWeek->toDateString()])
             ->with(['training'])
@@ -60,6 +70,8 @@ class DashboardController extends Controller
 
         $calendar = [];
 
+        // We manually loop through 7 days to ensure that "Rest Days" are
+        // also included in the response for the frontend UI to display.
         for ($i = 0; $i < 7; $i++) {
             $currentDate = $today->copy()->addDays($i)->toDateString();
             $dayName = $today->copy()->addDays($i)->format('l');
@@ -86,6 +98,7 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        // We only show sessions that were actually finished. 
         $recentHistory = $user->workoutSessions()
             ->with('training')
             ->whereNotNull('completed_at')
@@ -95,9 +108,11 @@ class DashboardController extends Controller
             ->map(function ($session) {
                 return [
                     'id' => $session->id,
-                    'training_name' => $session->training ? $session->training->name : 'Custom Workout',
+                    'training_name' => $session->training ?
+                        $session->training->name : 'Custom Workout',
                     'date' => $session->completed_at->format('M d, Y'),
-                    'duration_minutes' => $session->started_at->diffInMinutes($session->completed_at),
+                    'duration_minutes' => $session->started_at
+                        ->diffInMinutes($session->completed_at),
                 ];
             });
 

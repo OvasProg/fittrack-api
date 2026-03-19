@@ -8,10 +8,18 @@ use App\Models\WorkoutSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Provides high-level business metrics for the admin dashboard.
+ *
+ * This controller aggregates data from across the entire 
+ * application to show growth trends, user distribution, 
+ * and the overall popularity of different training programs.
+ */
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $totalUsers = User::count();
         $proUsers = User::where('role', 'pro')->count();
@@ -21,6 +29,8 @@ class DashboardController extends Controller
             ->where('completed_at', '>=', Carbon::now()->subDays(7))
             ->count();
 
+        // We use a Join and GroupBy here to find out which specific 
+        // training plan is performing the best
         $popularTraining = DB::table('workout_sessions')
             ->join('trainings', 'workout_sessions.training_id', '=', 'trainings.id')
             ->select('trainings.name', DB::raw('count(*) as total_completions'))
@@ -35,8 +45,10 @@ class DashboardController extends Controller
                 'pro_users' => $proUsers,
                 'free_users' => $freeUsers,
                 'weekly_workouts_number' => $weeklyWorkouts,
-                'most_popular_training' => $popularTraining ? $popularTraining->name : 'N/A',
-                'most_popular_training_completions' => $popularTraining ? $popularTraining->total_completions : 0,
+                'most_popular_training' => $popularTraining
+                    ? $popularTraining->name : 'N/A',
+                'most_popular_training_completions' => $popularTraining
+                    ? $popularTraining->total_completions : 0,
             ]
         ], 200);
     }

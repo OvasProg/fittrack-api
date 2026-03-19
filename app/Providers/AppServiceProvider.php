@@ -8,31 +8,39 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 
+/**
+ * The central hub for configuring how our application behaves.
+ *
+ * This provider is where we set up high-level rules, like how 
+ * password reset links are built and how fast users are allowed 
+ * to send requests to our API.
+ */
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
+        // We override the default password reset URL so that users are 
+        // sent to our custom frontend instead of a default 
+        // Laravel blade view.
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+            return config('app.frontend_url') .
+                "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 
-        // 1. Standard API Limit (60 requests per minute per user or IP)
+        // This is our standard "speed limit." It prevents a single user 
+        // from flooding the server with more than 60 requests per minute.
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        // 2. Strict Limit for Database-Heavy Actions (e.g., 10 requests per minute)
+        // Creating workouts and generating adaptive plans is "heavy" work 
+        // for our database. We limit this to 10 per minute to ensure 
+        // the server stays fast for everyone else.
         RateLimiter::for('workouts', function (Request $request) {
             return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });

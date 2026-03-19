@@ -7,17 +7,24 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Transforms raw workout data into meaningful fitness insights.
+ *
+ * This controller calculates lifting volume, tracks consistency, 
+ * and provides the data needed for the frontend charts. It also 
+ * enforces tier-based access to advanced analytics.
+ */
 class AnalyticsController extends Controller
 {
-    // Summary Stats
     public function summary(Request $request): JsonResponse
     {
         $user = $request->user();
         $thirtyDaysAgo = Carbon::now()->subDays(30);
 
-        $totalWorkouts = $user->workoutSessions()->whereNotNull('completed_at')->count();
+        $totalWorkouts = $user->workoutSessions()
+            ->whereNotNull('completed_at')
+            ->count();
 
-        // Calculate Monthly Volume
         $recentSessions = $user->workoutSessions()
             ->whereNotNull('completed_at')
             ->where('completed_at', '>=', $thirtyDaysAgo)
@@ -38,7 +45,6 @@ class AnalyticsController extends Controller
         ], 200);
     }
 
-    // Free Tier Chart: 7-Day Volume Trend
     public function volumeTrend(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -51,6 +57,9 @@ class AnalyticsController extends Controller
 
         $volumeTrend = [];
 
+        // We pre-fill the last 14 days with zeros. This ensures 
+        // the chart doesn't have "holes" if the user took 
+        // a few rest days in a row.
         for ($i = 13; $i >= 0; $i--) {
             $volumeTrend[Carbon::now()->subDays($i)->format('M d')] = 0;
         }
@@ -67,6 +76,8 @@ class AnalyticsController extends Controller
             }
         }
 
+        // We remove dates with 0 volume for the trend view to keep 
+        // the graph focused only on active training days.
         $filteredVolumeTrend = array_filter($volumeTrend, function ($volume) {
             return $volume > 0;
         });
@@ -77,18 +88,22 @@ class AnalyticsController extends Controller
         ], 200);
     }
 
-    // Pro Tier Chart: Muscle Distribution
     public function muscleDistribution(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        // Block free users at the API level
+        // This is a "Pro" feature
         if ($user->role === 'free') {
-            return response()->json(['message' => 'Upgrade to Pro to view detailed muscle distribution analytics.'], 403);
+            return response()->json([
+                'message' => 'Upgrade to Pro to view detailed muscle distribution.'
+            ], 403);
         }
 
         $thirtyDaysAgo = Carbon::now()->subDays(30);
 
+        // We use a Join query here for performance, as we need to 
+        // look across Sessions, Sets, and Exercises all at once 
+        // to see which muscle groups are getting the most work.
         $distribution = DB::table('workout_sessions')
             ->join('workout_sets', 'workout_sessions.id', '=', 'workout_sets.workout_session_id')
             ->join('exercises', 'workout_sets.exercise_id', '=', 'exercises.id')
