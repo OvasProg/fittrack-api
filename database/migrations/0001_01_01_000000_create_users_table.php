@@ -4,11 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Sets up the core tables for user accounts and authentication.
+ *
+ * This migration creates the main users table along with the specific 
+ * profile data needed for the FitTrack adaptive system, plus the standard
+ * Laravel tables for password resets and database sessions.
+ */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -21,12 +25,23 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            // Biometrics & Logic
             $table->integer('age')->nullable();
             $table->float('weight')->nullable();
             $table->float('height')->nullable();
+
+            // We default to 'Beginner' to ensure the adaptive algorithm 
+            // doesn't accidentally assign workouts that are too hard for a 
+            // new user.
             $table->string('experience_level')->default('Beginner');
+
+            // New signups get a basic 'free' role by default. An admin or  
+            // payment system is required to upgrade them to an instructor 
+            // or premium role.
             $table->string('role')->default('free');
+
+            // We store this as JSON so a user can easily save a list of 
+            // multiple preferred workout days, like ["Monday", 
+            // "Wednesday", "Friday"].
             $table->json('training_days')->nullable();
         });
 
@@ -46,9 +61,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
