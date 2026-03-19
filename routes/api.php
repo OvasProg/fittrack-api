@@ -25,8 +25,12 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // The Onboarding Endpoint
     Route::post('/onboarding', [OnboardingController::class, 'store']);
 
-    // Dashboard Endpoint
-    Route::get('/dashboard', [DashboardController::class, 'index']);
+    // Dashboard Endpoints
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/overview', [\App\Http\Controllers\DashboardController::class, 'overview']);
+        Route::get('/calendar', [\App\Http\Controllers\DashboardController::class, 'calendar']);
+        Route::get('/recent-history', [\App\Http\Controllers\DashboardController::class, 'recentHistory']);
+    });
 
     // Workout Sessions Endpoints
     Route::middleware('throttle:workouts')->group(function () {
@@ -38,8 +42,12 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::patch('/settings/biometrics', [SettingsController::class, 'updateBiometrics']);
     Route::delete('/settings/account', [SettingsController::class, 'destroyAccount']);
 
-    // Analytics Endpoint
-    Route::get('/analytics', [AnalyticsController::class, 'index']);
+    // Analytics Endpoints
+    Route::prefix('analytics')->group(function () {
+        Route::get('/summary', [\App\Http\Controllers\AnalyticsController::class, 'summary']);
+        Route::get('/charts/volume', [\App\Http\Controllers\AnalyticsController::class, 'volumeTrend']);
+        Route::get('/charts/muscle-distribution', [\App\Http\Controllers\AnalyticsController::class, 'muscleDistribution']);
+    });
 
     // Trainings Endpoint
     Route::get('/trainings', [TrainingController::class, 'index']);

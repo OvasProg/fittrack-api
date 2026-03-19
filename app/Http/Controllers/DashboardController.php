@@ -8,7 +8,43 @@ use Illuminate\Http\JsonResponse;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function overview(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $today = Carbon::today()->toDateString();
+
+        $todaysWorkout = $user->scheduledWorkouts()
+            ->where('date', $today)
+            ->with('training')
+            ->first();
+
+        $globalAnnouncement = \App\Models\Announcement::where('is_active', true)
+            ->select('title', 'message')
+            ->first();
+
+        return response()->json([
+            'user' => [
+                'name' => $user->name,
+                'tier' => $user->role,
+                'biometrics' => [
+                    'age' => $user->age,
+                    'weight' => $user->weight,
+                    'height' => $user->height,
+                    'experience_level' => $user->experience_level,
+                    'training_days' => $user->training_days,
+                ],
+            ],
+            'announcement' => $globalAnnouncement,
+            'todays_workout' => $todaysWorkout ? [
+                'id' => $todaysWorkout->training->id,
+                'name' => $todaysWorkout->training->name,
+                'difficulty' => $todaysWorkout->training->difficulty_level,
+                'status' => $todaysWorkout->status,
+            ] : null,
+        ], 200);
+    }
+
+    public function calendar(Request $request): JsonResponse
     {
         $user = $request->user();
         $today = Carbon::today();
@@ -19,8 +55,36 @@ class DashboardController extends Controller
             ->with(['training'])
             ->get()
             ->keyBy(function ($item) {
-                return \Carbon\Carbon::parse($item->date)->toDateString();
+                return Carbon::parse($item->date)->toDateString();
             });
+
+        $calendar = [];
+
+        for ($i = 0; $i < 7; $i++) {
+            $currentDate = $today->copy()->addDays($i)->toDateString();
+            $dayName = $today->copy()->addDays($i)->format('l');
+
+            $scheduledWorkout = $schedules->get($currentDate);
+
+            $calendar[] = [
+                'date' => $currentDate,
+                'day_name' => $dayName,
+                'is_today' => $i === 0,
+                'status' => $scheduledWorkout ? $scheduledWorkout->status : 'rest_day',
+                'training' => $scheduledWorkout ? [
+                    'id' => $scheduledWorkout->training->id,
+                    'name' => $scheduledWorkout->training->name,
+                    'difficulty' => $scheduledWorkout->training->difficulty_level,
+                ] : null,
+            ];
+        }
+
+        return response()->json($calendar, 200);
+    }
+
+    public function recentHistory(Request $request): JsonResponse
+    {
+        $user = $request->user();
 
         $recentHistory = $user->workoutSessions()
             ->with('training')
@@ -37,85 +101,6 @@ class DashboardController extends Controller
                 ];
             });
 
-        $calendar = [];
-        $todaysWorkout = null;
-
-        for ($i = 0; $i < 7; $i++) {
-            $currentDate = $today->copy()->addDays($i)->toDateString();
-            $dayName = $today->copy()->addDays($i)->format('l');
-
-            $scheduledWorkout = $schedules->get($currentDate);
-
-            $calendarData = [
-                'date' => $currentDate,
-                'day_name' => $dayName,
-                'is_today' => $i === 0,
-                'status' => $scheduledWorkout ? $scheduledWorkout->status : 'rest_day',
-                'training' => $scheduledWorkout ? [
-                    'id' => $scheduledWorkout->training->id,
-                    'name' => $scheduledWorkout->training->name,
-                    'difficulty' => $scheduledWorkout->training->difficulty_level,
-                ] : null,
-            ];
-
-            $calendar[] = $calendarData;
-
-            if ($i === 0 && $scheduledWorkout) {
-                $todaysWorkout = $scheduledWorkout;
-            }
-        }
-
-        $chartSessions = $user->workoutSessions()
-            ->whereNotNull('completed_at')
-            ->where('completed_at', '>=', Carbon::now()->subDays(7))
-            ->with('workoutSets')
-            ->get();
-
-        $volumeTrend = [];
-
-        for ($i = 6; $i >= 0; $i--) {
-            $volumeTrend[Carbon::now()->subDays($i)->format('M d')] = 0;
-        }
-
-        foreach ($chartSessions as $session) {
-            $sessionVolume = 0;
-            foreach ($session->workoutSets as $set) {
-                $sessionVolume += ($set->weight_used * $set->reps_completed);
-            }
-
-            $dateKey = $session->completed_at->format('M d');
-            if (array_key_exists($dateKey, $volumeTrend)) {
-                $volumeTrend[$dateKey] += $sessionVolume;
-            }
-        }
-
-        $filteredVolumeTrend = array_filter($volumeTrend, function ($volume) {
-            return $volume > 0;
-        });
-
-        $globalAnnouncement = \App\Models\Announcement::where('is_active', true)
-            ->select('title', 'message')
-            ->first();
-
-        return response()->json([
-            'user' => [
-                'name' => $user->name,
-                'tier' => $user->role,
-                'biometrics' => [
-                    'age' => $user->age,
-                    'weight' => $user->weight,
-                    'height' => $user->height,
-                    'experience_level' => $user->experience_level,
-                ],
-            ],
-            'announcement' => $globalAnnouncement,
-            'todays_workout' => $todaysWorkout,
-            'weekly_calendar' => $calendar,
-            'recent_history' => $recentHistory,
-            'charts' => [
-                'volume_trend_labels' => array_keys($filteredVolumeTrend),
-                'volume_trend_data' => array_values($filteredVolumeTrend),
-            ],
-        ]);
+        return response()->json($recentHistory, 200);
     }
 }
