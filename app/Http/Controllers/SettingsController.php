@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateBiometricsRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -45,14 +46,7 @@ class SettingsController extends Controller
             'message' => ($levelChanged || $daysChanged)
                 ? 'Profile updated and schedule recalculated.'
                 : 'Biometric data updated successfully.',
-            'user' => $user->only([
-                'name',
-                'age',
-                'weight',
-                'height',
-                'experience_level',
-                'training_days',
-            ]),
+            'user' => new UserResource($user),
         ], 200);
     }
 

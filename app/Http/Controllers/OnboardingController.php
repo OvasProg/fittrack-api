@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOnboardingRequest;
+use App\Http\Resources\UserResource;
 use App\Models\ScheduledWorkout;
 use App\Models\Training;
 use Carbon\Carbon;
@@ -80,7 +81,7 @@ class OnboardingController extends Controller
 
         return response()->json([
             'message' => 'Onboarding complete. Schedule generated successfully.',
-            'user' => $user->fresh(),
+            'user' => new UserResource($user->fresh()),
         ], 200);
     }
 }

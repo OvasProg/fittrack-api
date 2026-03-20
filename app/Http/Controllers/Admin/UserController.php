@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRoleRequest;
+use App\Http\Resources\UserResource;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -20,20 +21,18 @@ class UserController extends Controller
 {
     public function index(): JsonResponse
     {
-        $users = User::select('id', 'name', 'email', 'role', 'created_at')->get();
+        $users = User::all();
 
-        return response()->json($users, 200);
+        return response()->json(UserResource::collection($users), 200);
     }
 
     public function trashed(): JsonResponse
     {
         // We retrieve users who have "Soft Deleted" their accounts.
         // This allows admins to investigate or restore them if needed.
-        $trashedUsers = User::onlyTrashed()
-            ->select('id', 'name', 'email', 'role', 'deleted_at')
-            ->get();
+        $trashedUsers = User::onlyTrashed()->get();
 
-        return response()->json($trashedUsers, 200);
+        return response()->json(UserResource::collection($trashedUsers), 200);
     }
 
     public function updateRole(UpdateUserRoleRequest $request, $id): JsonResponse
@@ -66,7 +65,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => "User role updated to {$validated['role']}.",
-            'user' => $targetUser,
+            'user' => new UserResource($targetUser),
         ], 200);
     }
 

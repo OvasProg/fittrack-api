@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AnnouncementResource;
+use App\Http\Resources\ScheduledWorkoutResource;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\WorkoutSessionResource;
 use App\Models\Announcement;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -34,22 +38,10 @@ class DashboardController extends Controller
             'user' => [
                 'name' => $user->name,
                 'tier' => $user->role,
-                'biometrics' => [
-                    'age' => $user->age,
-                    'weight' => $user->weight,
-                    'height' => $user->height,
-                    'experience_level' => $user->experience_level,
-                    'training_days' => $user->training_days,
-                ],
+                'biometrics' => (new UserResource($user))->toArray($request)['biometrics'],
             ],
-            'announcement' => $globalAnnouncement,
-            'todays_workout' => $todaysWorkout ? [
-                'scheduled_workout_id' => $todaysWorkout->id,
-                'training_id' => $todaysWorkout->training->id,
-                'name' => $todaysWorkout->training->name,
-                'difficulty' => $todaysWorkout->training->difficulty_level,
-                'status' => $todaysWorkout->status,
-            ] : null,
+            'announcement' => $globalAnnouncement ? new AnnouncementResource($globalAnnouncement) : null,
+            'todays_workout' => $todaysWorkout ? new ScheduledWorkoutResource($todaysWorkout) : null,
         ], 200);
     }
 
@@ -105,18 +97,8 @@ class DashboardController extends Controller
             ->whereNotNull('completed_at')
             ->latest('completed_at')
             ->take(5)
-            ->get()
-            ->map(function ($session) {
-                return [
-                    'id' => $session->id,
-                    'training_name' => $session->training ?
-                        $session->training->name : 'Custom Workout',
-                    'date' => $session->completed_at->format('M d, Y'),
-                    'duration_minutes' => $session->started_at
-                        ->diffInMinutes($session->completed_at),
-                ];
-            });
+            ->get();
 
-        return response()->json($recentHistory, 200);
+        return response()->json(WorkoutSessionResource::collection($recentHistory), 200);
     }
 }

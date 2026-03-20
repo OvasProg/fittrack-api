@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExerciseRequest;
+use App\Http\Resources\ExerciseResource;
 use App\Models\AuditLog;
 use App\Models\Exercise;
 use Illuminate\Http\JsonResponse;
@@ -22,7 +23,7 @@ class ExerciseController extends Controller
     {
         $exercises = Exercise::all();
 
-        return response()->json($exercises, 200);
+        return response()->json(ExerciseResource::collection($exercises), 200);
     }
 
     public function store(StoreExerciseRequest $request): JsonResponse
@@ -48,7 +49,7 @@ class ExerciseController extends Controller
 
         return response()->json([
             'message' => 'Exercise added to library successfully.',
-            'exercise' => $exercise,
+            'exercise' => new ExerciseResource($exercise),
         ], 201);
     }
 

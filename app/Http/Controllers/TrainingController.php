@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TrainingResource;
 use App\Models\Training;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class TrainingController extends Controller
         $trainings = $query->get();
 
         return response()->json([
-            'trainings' => $trainings,
+            'trainings' => TrainingResource::collection($trainings),
         ], 200);
     }
 
@@ -45,7 +46,7 @@ class TrainingController extends Controller
         $training->load('exercises');
 
         return response()->json([
-            'training' => $training,
+            'training' => new TrainingResource($training),
         ], 200);
     }
 }

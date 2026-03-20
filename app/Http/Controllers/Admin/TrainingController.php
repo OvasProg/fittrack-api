@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTrainingRequest;
+use App\Http\Resources\TrainingResource;
 use App\Models\AuditLog;
 use App\Models\Training;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,7 @@ class TrainingController extends Controller
         // quickly see the movements associated with each plan.
         $trainings = Training::with('exercises')->get();
 
-        return response()->json($trainings, 200);
+        return response()->json(TrainingResource::collection($trainings), 200);
     }
 
     public function store(StoreTrainingRequest $request): JsonResponse
@@ -54,7 +55,7 @@ class TrainingController extends Controller
 
         return response()->json([
             'message' => 'Training created successfully.',
-            'training' => $training->load('exercises'),
+            'training' => new TrainingResource($training->load('exercises')),
         ], 201);
     }
 
