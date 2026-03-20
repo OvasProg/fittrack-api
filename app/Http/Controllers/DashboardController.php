@@ -44,7 +44,8 @@ class DashboardController extends Controller
             ],
             'announcement' => $globalAnnouncement,
             'todays_workout' => $todaysWorkout ? [
-                'id' => $todaysWorkout->training->id,
+                'scheduled_workout_id' => $todaysWorkout->id,
+                'training_id' => $todaysWorkout->training->id,
                 'name' => $todaysWorkout->training->name,
                 'difficulty' => $todaysWorkout->training->difficulty_level,
                 'status' => $todaysWorkout->status,
