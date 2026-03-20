@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateUserRoleRequest;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -35,11 +36,9 @@ class UserController extends Controller
         return response()->json($trashedUsers, 200);
     }
 
-    public function updateRole(Request $request, $id): JsonResponse
+    public function updateRole(UpdateUserRoleRequest $request, $id): JsonResponse
     {
-        $validated = $request->validate([
-            'role' => 'required|string|in:free,pro,admin',
-        ]);
+        $validated = $request->validated();
 
         $targetUser = User::findOrFail($id);
 

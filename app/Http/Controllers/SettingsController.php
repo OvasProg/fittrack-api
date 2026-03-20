@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateBiometricsRequest;
 use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -17,21 +18,14 @@ use Illuminate\Http\Request;
  */
 class SettingsController extends Controller
 {
-    public function updateBiometrics(Request $request): JsonResponse
+    public function updateBiometrics(UpdateBiometricsRequest $request): JsonResponse
     {
         $user = $request->user();
 
         // We use 'sometimes' so the user can update just one field
         // (like weight) without having to send their entire
         // profile data again.
-        $validated = $request->validate([
-            'age' => 'sometimes|integer|min:10|max:100',
-            'weight' => 'sometimes|numeric|min:30|max:300',
-            'height' => 'sometimes|numeric|min:100|max:250',
-            'experience_level' => 'sometimes|string|in:Beginner,Intermediate,Advanced',
-            'training_days' => 'sometimes|array|min:1|max:7',
-            'training_days.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-        ]);
+        $validated = $request->validated();
 
         // We track if the core "plan" variables changed. If they did,
         // we need to trigger a fresh calculation of their calendar.

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FinishWorkoutRequest;
+use App\Http\Requests\StartWorkoutRequest;
 use App\Models\ScheduledWorkout;
 use App\Models\WorkoutSession;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,12 +19,9 @@ use Illuminate\Support\Facades\DB;
  */
 class WorkoutController extends Controller
 {
-    public function start(Request $request): JsonResponse
+    public function start(StartWorkoutRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'training_id' => 'required|exists:trainings,id',
-            'scheduled_workout_id' => 'nullable|exists:scheduled_workouts,id',
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
 
@@ -51,7 +49,7 @@ class WorkoutController extends Controller
         ], 201);
     }
 
-    public function finish(Request $request, WorkoutSession $session): JsonResponse
+    public function finish(FinishWorkoutRequest $request, WorkoutSession $session): JsonResponse
     {
         // Security check: Ensure the user finishing the workout
         // is the same one who started it.
@@ -65,14 +63,7 @@ class WorkoutController extends Controller
             return response()->json(['message' => 'This workout is already completed.'], 400);
         }
 
-        $validated = $request->validate([
-            'scheduled_workout_id' => 'nullable|exists:scheduled_workouts,id',
-            'sets' => 'required|array|min:0',
-            'sets.*.exercise_id' => 'required|exists:exercises,id',
-            'sets.*.set_number' => 'required|integer|min:1',
-            'sets.*.weight_used' => 'required|numeric|min:0',
-            'sets.*.reps_completed' => 'required|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         // We use a Database Transaction to ensure that either
         // everything is saved (session and all sets) or nothing is.

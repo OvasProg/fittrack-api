@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreOnboardingRequest;
 use App\Models\ScheduledWorkout;
 use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Handles the initial setup for new FitTrack users.
@@ -17,16 +17,9 @@ use Illuminate\Http\Request;
  */
 class OnboardingController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(StoreOnboardingRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'age' => 'required|integer|min:10|max:100',
-            'weight' => 'required|numeric|min:30|max:300',
-            'height' => 'required|numeric|min:100|max:250',
-            'experience_level' => 'required|string|in:Beginner,Intermediate,Advanced',
-            'training_days' => 'required|array|min:1|max:7',
-            'training_days.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
 

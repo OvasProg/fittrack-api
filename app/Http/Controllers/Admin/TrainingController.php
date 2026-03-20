@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTrainingRequest;
 use App\Models\AuditLog;
 use App\Models\Training;
 use Illuminate\Http\JsonResponse;
@@ -26,16 +27,9 @@ class TrainingController extends Controller
         return response()->json($trainings, 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTrainingRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'difficulty_level' => 'required|string|in:Beginner,Intermediate,Advanced',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|url',
-            'exercise_ids' => 'required|array|min:1',
-            'exercise_ids.*' => 'exists:exercises,id',
-        ]);
+        $validated = $request->validated();
 
         $training = Training::create([
             'name' => $validated['name'],

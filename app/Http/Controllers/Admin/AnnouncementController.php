@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\AuditLog;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Global broadcast system for FitTrack admins.
@@ -16,12 +16,9 @@ use Illuminate\Http\Request;
  */
 class AnnouncementController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(StoreAnnouncementRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         // We automatically deactivate all previous announcements
         Announcement::where('is_active', true)->update(['is_active' => false]);

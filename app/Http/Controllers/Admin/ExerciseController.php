@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreExerciseRequest;
 use App\Models\AuditLog;
 use App\Models\Exercise;
 use Illuminate\Http\JsonResponse;
@@ -24,13 +25,9 @@ class ExerciseController extends Controller
         return response()->json($exercises, 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreExerciseRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:exercises,name',
-            'target_muscle' => 'required|string|max:255',
-            'base_multiplier' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         // If no multiplier is provided, we default to 1.0
         if (! isset($validated['base_multiplier'])) {
