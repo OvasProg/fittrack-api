@@ -3,25 +3,26 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Training;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
+use App\Models\Training;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Admin portal for managing the library of training programs.
  *
- * This controller allows administrators to design new workout 
- * plans by grouping exercises together. It ensures every change 
+ * This controller allows administrators to design new workout
+ * plans by grouping exercises together. It ensures every change
  * to the curriculum is logged for quality control.
  */
 class TrainingController extends Controller
 {
     public function index(): JsonResponse
     {
-        // We include the exercises in the list so admins can 
+        // We include the exercises in the list so admins can
         // quickly see the movements associated with each plan.
         $trainings = Training::with('exercises')->get();
+
         return response()->json($trainings, 200);
     }
 
@@ -43,7 +44,7 @@ class TrainingController extends Controller
             'image_url' => $validated['image_url'] ?? null,
         ]);
 
-        // 'sync' used to manage the many-to-many 
+        // 'sync' used to manage the many-to-many
         // relationship in the pivot table.
         $training->exercises()->sync($validated['exercise_ids']);
 
@@ -53,13 +54,13 @@ class TrainingController extends Controller
             'action' => 'created_training',
             'details' => json_encode([
                 'training_id' => $training->id,
-                'name' => $training->name
-            ])
+                'name' => $training->name,
+            ]),
         ]);
 
         return response()->json([
             'message' => 'Training created successfully.',
-            'training' => $training->load('exercises')
+            'training' => $training->load('exercises'),
         ], 201);
     }
 
@@ -68,15 +69,15 @@ class TrainingController extends Controller
         $training = Training::findOrFail($id);
         $trainingName = $training->name;
 
-        // Note: Because of our database migration (nullOnDelete), 
-        // deleting a training won't break a user's session history; 
+        // Note: Because of our database migration (nullOnDelete),
+        // deleting a training won't break a user's session history;
         // it just removes the template from the catalog.
         $training->delete();
 
         AuditLog::create([
             'admin_id' => $request->user()->id,
             'action' => 'deleted_training',
-            'details' => json_encode(['training_name' => $trainingName])
+            'details' => json_encode(['training_name' => $trainingName]),
         ]);
 
         return response()->json(['message' => 'Training deleted successfully.'], 200);

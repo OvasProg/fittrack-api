@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Represents a workout program or template (like "Full Body for Beginners").
  *
- * Instructors create these training plans, and learners can either schedule 
+ * Instructors create these training plans, and learners can either schedule
  * them for the future or start them right away.
  *
  * @property int $id
@@ -17,11 +19,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $description
  * @property string|null $difficulty_level
  * @property string|null $image_url
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Exercise[] $exercises
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScheduledWorkout[] $scheduledWorkouts
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WorkoutSession[] $workoutSessions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection|Exercise[] $exercises
+ * @property-read Collection|ScheduledWorkout[] $scheduledWorkouts
+ * @property-read Collection|WorkoutSession[] $workoutSessions
  */
 class Training extends Model
 {
@@ -34,9 +36,9 @@ class Training extends Model
 
     public function exercises(): BelongsToMany
     {
-        // We load default sets and reps from the pivot table because 
-        // the same exercise can have different targets.  
-        // For example, "Pushups" might be 3 sets of 10 in a beginner 
+        // We load default sets and reps from the pivot table because
+        // the same exercise can have different targets.
+        // For example, "Pushups" might be 3 sets of 10 in a beginner
         // training, but 5 sets of 20 in an advanced one.
         return $this->belongsToMany(Exercise::class, 'training_exercises')
             ->withPivot('default_sets', 'default_reps')

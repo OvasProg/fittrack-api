@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -25,10 +26,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $experience_level
  * @property string $role
  * @property array|null $training_days
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 class User extends Authenticatable
 {
@@ -43,7 +44,7 @@ class User extends Authenticatable
         'height',
         'experience_level',
         'role',
-        'training_days'
+        'training_days',
     ];
 
     protected $hidden = [
@@ -62,8 +63,8 @@ class User extends Authenticatable
 
     protected static function booted(): void
     {
-        // When a user is permanently deleted, we also need to permanently delete 
-        // their workout history. We use forceDelete() here so the related records 
+        // When a user is permanently deleted, we also need to permanently delete
+        // their workout history. We use forceDelete() here so the related records
         // don't just get soft-deleted by mistake.
         static::forceDeleted(function (User $user) {
             $user->workoutSessions()->forceDelete();

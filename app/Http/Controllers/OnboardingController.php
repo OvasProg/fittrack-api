@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Training;
 use App\Models\ScheduledWorkout;
+use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Handles the initial setup for new FitTrack users.
  *
- * This controller captures the user's physical profile and 
- * automatically generates their first week of training 
+ * This controller captures the user's physical profile and
+ * automatically generates their first week of training
  * based on their experience level and preferred days.
  */
 class OnboardingController extends Controller
@@ -38,11 +38,11 @@ class OnboardingController extends Controller
             'training_days' => $validated['training_days'],
         ]);
 
-        // We clear any existing schedules before generating new ones. 
+        // We clear any existing schedules before generating new ones.
         $user->scheduledWorkouts()->delete();
 
-        // We try to find plans that match the user's skill level. 
-        // If no perfect match is found, we provide generic 
+        // We try to find plans that match the user's skill level.
+        // If no perfect match is found, we provide generic
         // plans so the user isn't left with an empty calendar.
         $trainings = Training::where('difficulty_level', 'LIKE', $validated['experience_level'])
             ->get();
@@ -52,7 +52,7 @@ class OnboardingController extends Controller
 
             if ($trainings->count() === 0) {
                 return response()->json([
-                    'message' => 'No trainings exist in database. Please run seeders.'
+                    'message' => 'No trainings exist in database. Please run seeders.',
                 ], 400);
             }
         }
@@ -60,16 +60,16 @@ class OnboardingController extends Controller
         $trainingIndex = 0;
         $today = Carbon::today();
 
-        // We loop through the next 7 days. If the day name matches 
-        // one of the user's chosen training days, we assign 
+        // We loop through the next 7 days. If the day name matches
+        // one of the user's chosen training days, we assign
         // a workout from our matching pool.
         for ($i = 0; $i < 7; $i++) {
             $currentDate = $today->copy()->addDays($i);
             $dayName = $currentDate->format('l');
 
             if (in_array($dayName, $validated['training_days'])) {
-                // We use the modulo operator (%) to cycle through 
-                // available trainings if there are fewer plans 
+                // We use the modulo operator (%) to cycle through
+                // available trainings if there are fewer plans
                 // than there are training days.
                 $training = $trainings->values()->get($trainingIndex % $trainings->count());
 
@@ -87,7 +87,7 @@ class OnboardingController extends Controller
 
         return response()->json([
             'message' => 'Onboarding complete. Schedule generated successfully.',
-            'user' => $user->fresh()
+            'user' => $user->fresh(),
         ], 200);
     }
 }

@@ -3,20 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Carbon;
 
 /**
  * Connects a training plan to a specific exercise.
  *
- * This pivot model does more than just link two tables together. It holds 
- * the actual rules (sets and reps) for how an exercise should be performed 
+ * This pivot model does more than just link two tables together. It holds
+ * the actual rules (sets and reps) for how an exercise should be performed
  * inside a specific training program.
  *
  * @property int $training_id
  * @property int $exercise_id
  * @property int $default_sets
  * @property int $default_reps
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class TrainingExercise extends Pivot
 {

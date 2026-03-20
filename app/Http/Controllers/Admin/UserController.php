@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Admin-only interface for managing the FitTrack user base.
  *
- * This controller allows administrators to manage roles, view 
- * deleted accounts, and perform permanent data cleanup. Every 
+ * This controller allows administrators to manage roles, view
+ * deleted accounts, and perform permanent data cleanup. Every
  * destructive or sensitive action is recorded in the Audit Logs.
  */
 class UserController extends Controller
@@ -20,12 +20,13 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         $users = User::select('id', 'name', 'email', 'role', 'created_at')->get();
+
         return response()->json($users, 200);
     }
 
     public function trashed(): JsonResponse
     {
-        // We retrieve users who have "Soft Deleted" their accounts. 
+        // We retrieve users who have "Soft Deleted" their accounts.
         // This allows admins to investigate or restore them if needed.
         $trashedUsers = User::onlyTrashed()
             ->select('id', 'name', 'email', 'role', 'deleted_at')
@@ -42,11 +43,11 @@ class UserController extends Controller
 
         $targetUser = User::findOrFail($id);
 
-        // Security Check: We prevent an admin from accidentally 
+        // Security Check: We prevent an admin from accidentally
         // demoting themselves and losing access to the dashboard.
         if ($targetUser->id === $request->user()->id) {
             return response()->json([
-                'message' => 'You cannot change your own role.'
+                'message' => 'You cannot change your own role.',
             ], 403);
         }
 
@@ -60,13 +61,13 @@ class UserController extends Controller
             'details' => json_encode([
                 'target_user_id' => $targetUser->id,
                 'from' => $oldRole,
-                'to' => $validated['role']
-            ])
+                'to' => $validated['role'],
+            ]),
         ]);
 
         return response()->json([
             'message' => "User role updated to {$validated['role']}.",
-            'user' => $targetUser
+            'user' => $targetUser,
         ], 200);
     }
 
@@ -78,11 +79,11 @@ class UserController extends Controller
         AuditLog::create([
             'admin_id' => $request->user()->id,
             'action' => 'restored_user',
-            'details' => json_encode(['target_user_id' => $targetUser->id])
+            'details' => json_encode(['target_user_id' => $targetUser->id]),
         ]);
 
         return response()->json([
-            'message' => 'User account restored successfully.'
+            'message' => 'User account restored successfully.',
         ], 200);
     }
 
@@ -91,18 +92,18 @@ class UserController extends Controller
         $targetUser = User::onlyTrashed()->findOrFail($id);
         $targetUserId = $targetUser->id;
 
-        // This action is irreversible. It wipes the user 
+        // This action is irreversible. It wipes the user
         // and all their workout history from the database.
         $targetUser->forceDelete();
 
         AuditLog::create([
             'admin_id' => $request->user()->id,
             'action' => 'permanently_deleted_user',
-            'details' => json_encode(['target_user_id' => $targetUserId])
+            'details' => json_encode(['target_user_id' => $targetUserId]),
         ]);
 
         return response()->json([
-            'message' => 'User and all associated data permanently deleted.'
+            'message' => 'User and all associated data permanently deleted.',
         ], 200);
     }
 }

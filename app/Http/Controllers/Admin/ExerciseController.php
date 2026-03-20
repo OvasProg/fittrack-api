@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exercise;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
+use App\Models\Exercise;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Admin portal for managing the global exercise library.
  *
- * This controller allows admins to define the individual movements 
- * (like Squats or Bench Press) that users can track. It serves 
+ * This controller allows admins to define the individual movements
+ * (like Squats or Bench Press) that users can track. It serves
  * as the data source for the training plan builder.
  */
 class ExerciseController extends Controller
@@ -20,6 +20,7 @@ class ExerciseController extends Controller
     public function index(): JsonResponse
     {
         $exercises = Exercise::all();
+
         return response()->json($exercises, 200);
     }
 
@@ -28,11 +29,11 @@ class ExerciseController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:exercises,name',
             'target_muscle' => 'required|string|max:255',
-            'base_multiplier' => 'nullable|numeric|min:0'
+            'base_multiplier' => 'nullable|numeric|min:0',
         ]);
 
         // If no multiplier is provided, we default to 1.0
-        if (!isset($validated['base_multiplier'])) {
+        if (! isset($validated['base_multiplier'])) {
             $validated['base_multiplier'] = 1.0;
         }
 
@@ -44,13 +45,13 @@ class ExerciseController extends Controller
             'action' => 'created_exercise',
             'details' => json_encode([
                 'exercise_id' => $exercise->id,
-                'name' => $exercise->name
-            ])
+                'name' => $exercise->name,
+            ]),
         ]);
 
         return response()->json([
             'message' => 'Exercise added to library successfully.',
-            'exercise' => $exercise
+            'exercise' => $exercise,
         ], 201);
     }
 
@@ -65,11 +66,11 @@ class ExerciseController extends Controller
         AuditLog::create([
             'admin_id' => $request->user()->id,
             'action' => 'deleted_exercise',
-            'details' => json_encode(['exercise_name' => $exerciseName])
+            'details' => json_encode(['exercise_name' => $exerciseName]),
         ]);
 
         return response()->json([
-            'message' => 'Exercise removed from library.'
+            'message' => 'Exercise removed from library.',
         ], 200);
     }
 }

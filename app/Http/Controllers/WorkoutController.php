@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\WorkoutSession;
 use App\Models\ScheduledWorkout;
-use Illuminate\Support\Facades\DB;
+use App\Models\WorkoutSession;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * The engine for recording live workout activity.
  *
- * This controller handles the transition from a "planned" workout 
- * to a "live" session. It manages the real-time start/finish 
+ * This controller handles the transition from a "planned" workout
+ * to a "live" session. It manages the real-time start/finish
  * logic and ensures all individual sets are saved safely.
  */
 class WorkoutController extends Controller
@@ -27,7 +27,7 @@ class WorkoutController extends Controller
 
         $user = $request->user();
 
-        // We create a new session record to start the "clock" 
+        // We create a new session record to start the "clock"
         // for the user's training duration.
         $session = WorkoutSession::create([
             'user_id' => $user->id,
@@ -35,10 +35,10 @@ class WorkoutController extends Controller
             'started_at' => Carbon::now(),
         ]);
 
-        // If the user started this from their calendar, we mark 
-        // the scheduled item as 'in_progress' so they can't 
+        // If the user started this from their calendar, we mark
+        // the scheduled item as 'in_progress' so they can't
         // accidentally start it twice.
-        if (!empty($validated['scheduled_workout_id'])) {
+        if (! empty($validated['scheduled_workout_id'])) {
             ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
                 ->where('user_id', $user->id)
                 ->update(['status' => 'in_progress']);
@@ -53,13 +53,13 @@ class WorkoutController extends Controller
 
     public function finish(Request $request, WorkoutSession $session): JsonResponse
     {
-        // Security check: Ensure the user finishing the workout 
+        // Security check: Ensure the user finishing the workout
         // is the same one who started it.
         if ($session->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized access.'], 403);
         }
 
-        // Integrity check: Prevent users from "double-finishing" 
+        // Integrity check: Prevent users from "double-finishing"
         // a session that is already closed.
         if ($session->completed_at !== null) {
             return response()->json(['message' => 'This workout is already completed.'], 400);
@@ -74,8 +74,8 @@ class WorkoutController extends Controller
             'sets.*.reps_completed' => 'required|integer|min:0',
         ]);
 
-        // We use a Database Transaction to ensure that either 
-        // everything is saved (session and all sets) or nothing is. 
+        // We use a Database Transaction to ensure that either
+        // everything is saved (session and all sets) or nothing is.
         // This prevents "ghost sessions" with no data.
         DB::beginTransaction();
 
@@ -93,7 +93,7 @@ class WorkoutController extends Controller
                 'completed_at' => Carbon::now(),
             ]);
 
-            if (!empty($validated['scheduled_workout_id'])) {
+            if (! empty($validated['scheduled_workout_id'])) {
                 ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
                     ->update(['status' => 'completed']);
             }
@@ -103,15 +103,16 @@ class WorkoutController extends Controller
             return response()->json([
                 'message' => 'Workout logged successfully!',
                 'duration_minutes' => $session->started_at
-                    ->diffInMinutes($session->completed_at)
+                    ->diffInMinutes($session->completed_at),
             ], 200);
         } catch (\Exception $e) {
-            // If anything goes wrong (database error, etc.), we 
+            // If anything goes wrong (database error, etc.), we
             // undo everything to keep the data clean.
             DB::rollBack();
+
             return response()->json([
                 'message' => 'Failed to save workout data.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

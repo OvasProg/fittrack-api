@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Exercise;
 use App\Models\Training;
+use Illuminate\Database\Seeder;
 
 class FitnessDataSeeder extends Seeder
 {
@@ -49,7 +49,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Squat', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Barbell Row', 'sets' => 3, 'reps' => 10],
-                ]
+                ],
             ],
             [
                 'name' => 'Full Body Foundation B',
@@ -59,7 +59,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Overhead Press', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Lat Pulldown', 'sets' => 3, 'reps' => 12],
-                ]
+                ],
             ],
             [
                 'name' => 'Upper Body Starter',
@@ -69,7 +69,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Lat Pulldown', 'sets' => 3, 'reps' => 12],
                     ['exercise' => 'Dumbbell Bicep Curl', 'sets' => 3, 'reps' => 12],
-                ]
+                ],
             ],
             [
                 'name' => 'Lower Body Starter',
@@ -79,7 +79,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Leg Press', 'sets' => 3, 'reps' => 12],
                     ['exercise' => 'Leg Curl', 'sets' => 3, 'reps' => 12],
                     ['exercise' => 'Calf Raise', 'sets' => 3, 'reps' => 15],
-                ]
+                ],
             ],
             [
                 'name' => 'Core & Conditioning',
@@ -88,7 +88,7 @@ class FitnessDataSeeder extends Seeder
                 'routine' => [
                     ['exercise' => 'Cable Crunch', 'sets' => 3, 'reps' => 15],
                     ['exercise' => 'Face Pull', 'sets' => 3, 'reps' => 15],
-                ]
+                ],
             ],
 
             // --- INTERMEDIATE ---
@@ -102,7 +102,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Overhead Press', 'sets' => 3, 'reps' => 8],
                     ['exercise' => 'Lateral Raise', 'sets' => 3, 'reps' => 15],
                     ['exercise' => 'Tricep Pushdown', 'sets' => 3, 'reps' => 12],
-                ]
+                ],
             ],
             [
                 'name' => 'Pull Day (Hypertrophy)',
@@ -113,7 +113,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Lat Pulldown', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Face Pull', 'sets' => 3, 'reps' => 15],
                     ['exercise' => 'Dumbbell Bicep Curl', 'sets' => 4, 'reps' => 10],
-                ]
+                ],
             ],
             [
                 'name' => 'Leg Day (Hypertrophy)',
@@ -124,7 +124,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Bulgarian Split Squat', 'sets' => 3, 'reps' => 10],
                     ['exercise' => 'Calf Raise', 'sets' => 4, 'reps' => 15],
-                ]
+                ],
             ],
             [
                 'name' => 'Upper Body Power',
@@ -134,7 +134,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Bench Press', 'sets' => 5, 'reps' => 5],
                     ['exercise' => 'Barbell Row', 'sets' => 5, 'reps' => 5],
                     ['exercise' => 'Overhead Press', 'sets' => 3, 'reps' => 6],
-                ]
+                ],
             ],
             [
                 'name' => 'Lower Body Power',
@@ -144,7 +144,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Squat', 'sets' => 5, 'reps' => 5],
                     ['exercise' => 'Conventional Deadlift', 'sets' => 3, 'reps' => 5],
                     ['exercise' => 'Leg Press', 'sets' => 3, 'reps' => 8],
-                ]
+                ],
             ],
 
             // --- ADVANCED ---
@@ -156,7 +156,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Bench Press', 'sets' => 5, 'reps' => 3],
                     ['exercise' => 'Overhead Press', 'sets' => 5, 'reps' => 5],
                     ['exercise' => 'Incline Dumbbell Press', 'sets' => 4, 'reps' => 8],
-                ]
+                ],
             ],
             [
                 'name' => 'Pull (Strength Focus)',
@@ -166,7 +166,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Conventional Deadlift', 'sets' => 5, 'reps' => 3],
                     ['exercise' => 'Barbell Row', 'sets' => 5, 'reps' => 5],
                     ['exercise' => 'Lat Pulldown', 'sets' => 4, 'reps' => 8],
-                ]
+                ],
             ],
             [
                 'name' => 'Legs (Strength Focus)',
@@ -176,7 +176,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Squat', 'sets' => 5, 'reps' => 3],
                     ['exercise' => 'Front Squat', 'sets' => 4, 'reps' => 6],
                     ['exercise' => 'Romanian Deadlift', 'sets' => 4, 'reps' => 8],
-                ]
+                ],
             ],
             [
                 'name' => 'Arnold Split: Chest & Back',
@@ -187,7 +187,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Barbell Row', 'sets' => 4, 'reps' => 8],
                     ['exercise' => 'Incline Dumbbell Press', 'sets' => 4, 'reps' => 10],
                     ['exercise' => 'Lat Pulldown', 'sets' => 4, 'reps' => 10],
-                ]
+                ],
             ],
             [
                 'name' => 'Arnold Split: Shoulders & Arms',
@@ -198,7 +198,7 @@ class FitnessDataSeeder extends Seeder
                     ['exercise' => 'Lateral Raise', 'sets' => 4, 'reps' => 12],
                     ['exercise' => 'Dumbbell Bicep Curl', 'sets' => 4, 'reps' => 10],
                     ['exercise' => 'Tricep Pushdown', 'sets' => 4, 'reps' => 10],
-                ]
+                ],
             ],
         ];
 
@@ -208,7 +208,7 @@ class FitnessDataSeeder extends Seeder
                 'name' => $data['name'],
                 'difficulty_level' => $data['difficulty_level'],
                 'description' => $data['description'],
-                'image_url' => 'https://via.placeholder.com/400x200.png?text=' . urlencode($data['name']) // Placeholder for future S3 images
+                'image_url' => 'https://via.placeholder.com/400x200.png?text=' . urlencode($data['name']), // Placeholder for future S3 images
             ]);
 
             foreach ($data['routine'] as $routineItem) {
@@ -217,7 +217,7 @@ class FitnessDataSeeder extends Seeder
 
                 $training->exercises()->attach($exerciseId, [
                     'default_sets' => $routineItem['sets'],
-                    'default_reps' => $routineItem['reps']
+                    'default_reps' => $routineItem['reps'],
                 ]);
             }
         }

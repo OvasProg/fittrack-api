@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Creates the library of physical exercises.
- * This table stores every individual movement available in the app. 
+ * This table stores every individual movement available in the app.
  * These exercises are then pulled into different training plans.
  */
 return new class extends Migration
@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('target_muscle');
 
-            // This multiplier helps our adaptive system suggest the right 
-            // weight. For example, if it is set to 0.5, the app might 
-            // suggest the user starts by lifting 50% of their own body 
+            // This multiplier helps our adaptive system suggest the right
+            // weight. For example, if it is set to 0.5, the app might
+            // suggest the user starts by lifting 50% of their own body
             // weight for this exercise.
             $table->float('base_multiplier');
 

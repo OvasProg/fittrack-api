@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Training;
-use App\Models\ScheduledWorkout;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Manages user profile updates and account lifecycle.
  *
- * This controller allows users to tweak their physical data or 
- * training preferences. It also handles the complex logic of 
- * shifting their future schedule if they change their fitness 
+ * This controller allows users to tweak their physical data or
+ * training preferences. It also handles the complex logic of
+ * shifting their future schedule if they change their fitness
  * level or available days.
  */
 class SettingsController extends Controller
@@ -22,8 +21,8 @@ class SettingsController extends Controller
     {
         $user = $request->user();
 
-        // We use 'sometimes' so the user can update just one field 
-        // (like weight) without having to send their entire 
+        // We use 'sometimes' so the user can update just one field
+        // (like weight) without having to send their entire
         // profile data again.
         $validated = $request->validate([
             'age' => 'sometimes|integer|min:10|max:100',
@@ -34,7 +33,7 @@ class SettingsController extends Controller
             'training_days.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
         ]);
 
-        // We track if the core "plan" variables changed. If they did, 
+        // We track if the core "plan" variables changed. If they did,
         // we need to trigger a fresh calculation of their calendar.
         $levelChanged = isset($validated['experience_level']) &&
             $validated['experience_level'] !== $user->experience_level;
@@ -58,8 +57,8 @@ class SettingsController extends Controller
                 'weight',
                 'height',
                 'experience_level',
-                'training_days'
-            ])
+                'training_days',
+            ]),
         ], 200);
     }
 
@@ -67,13 +66,13 @@ class SettingsController extends Controller
     {
         $user = $request->user();
 
-        // We revoke all active login tokens immediately so the user 
+        // We revoke all active login tokens immediately so the user
         // is kicked out of all devices before the account is deleted.
         $user->tokens()->delete();
         $user->delete();
 
         return response()->json([
-            'message' => 'Account deactivated and scheduled for deletion.'
+            'message' => 'Account deactivated and scheduled for deletion.',
         ], 200);
     }
 
@@ -85,9 +84,11 @@ class SettingsController extends Controller
         $newTrainings = Training::where('difficulty_level', $user->experience_level)->get();
         $preferredDays = $user->training_days;
 
-        if ($newTrainings->isEmpty() || empty($preferredDays)) return;
+        if ($newTrainings->isEmpty() || empty($preferredDays)) {
+            return;
+        }
 
-        // We only touch 'pending' workouts. If a user already finished 
+        // We only touch 'pending' workouts. If a user already finished
         // a session, we leave it alone to preserve their history.
         $pendingWorkouts = $user->scheduledWorkouts()
             ->where('status', 'pending')
@@ -99,9 +100,9 @@ class SettingsController extends Controller
         $datePointer = Carbon::today();
 
         foreach ($pendingWorkouts as $workout) {
-            // We skip over days that aren't in the user's new 
+            // We skip over days that aren't in the user's new
             // preferred schedule
-            while (!in_array($datePointer->format('l'), $preferredDays)) {
+            while (! in_array($datePointer->format('l'), $preferredDays)) {
                 $datePointer->addDay();
             }
 
@@ -109,7 +110,7 @@ class SettingsController extends Controller
 
             $workout->update([
                 'training_id' => $training->id,
-                'date' => $datePointer->toDateString()
+                'date' => $datePointer->toDateString(),
             ]);
 
             $datePointer->addDay();

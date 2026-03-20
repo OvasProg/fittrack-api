@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Records a single set of an exercise during a workout.
  *
- * This model tracks the actual effort a user puts in, saving details 
- * like which set number it is, how much weight they lifted, and how 
+ * This model tracks the actual effort a user puts in, saving details
+ * like which set number it is, how much weight they lifted, and how
  * many reps they finished.
  *
  * @property int $id
@@ -18,10 +19,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $set_number
  * @property float|null $weight_used
  * @property int|null $reps_completed
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\WorkoutSession $workoutSession
- * @property-read \App\Models\Exercise $exercise
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read WorkoutSession $workoutSession
+ * @property-read Exercise $exercise
  */
 class WorkoutSet extends Model
 {

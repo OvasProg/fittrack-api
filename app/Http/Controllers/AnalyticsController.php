@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Transforms raw workout data into meaningful fitness insights.
  *
- * This controller calculates lifting volume, tracks consistency, 
- * and provides the data needed for the frontend charts. It also 
+ * This controller calculates lifting volume, tracks consistency,
+ * and provides the data needed for the frontend charts. It also
  * enforces tier-based access to advanced analytics.
  */
 class AnalyticsController extends Controller
@@ -66,7 +66,7 @@ class AnalyticsController extends Controller
                 $sessionVolume += ($set->weight_used * $set->reps_completed);
             }
 
-            if (!isset($volumeTrend[$dateKey])) {
+            if (! isset($volumeTrend[$dateKey])) {
                 $volumeTrend[$dateKey] = 0;
             }
 
@@ -86,14 +86,14 @@ class AnalyticsController extends Controller
         // This is a "Pro" feature
         if ($user->role === 'free') {
             return response()->json([
-                'message' => 'Upgrade to Pro to view detailed muscle distribution.'
+                'message' => 'Upgrade to Pro to view detailed muscle distribution.',
             ], 403);
         }
 
         $thirtyDaysAgo = Carbon::now()->subDays(30);
 
-        // We use a Join query here for performance, as we need to 
-        // look across Sessions, Sets, and Exercises all at once 
+        // We use a Join query here for performance, as we need to
+        // look across Sessions, Sets, and Exercises all at once
         // to see which muscle groups are getting the most work.
         $distribution = DB::table('workout_sessions')
             ->join('workout_sets', 'workout_sessions.id', '=', 'workout_sets.workout_session_id')

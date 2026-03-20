@@ -4,23 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Represents a workout that a user has planned for a specific day.
  *
- * This acts like a calendar event, linking a user to a specific training plan. 
- * The 'status' field helps track if they actually did it, skipped it, or if it 
+ * This acts like a calendar event, linking a user to a specific training plan.
+ * The 'status' field helps track if they actually did it, skipped it, or if it
  * is still upcoming.
  *
  * @property int $id
  * @property int $user_id
  * @property int $training_id
- * @property \Illuminate\Support\Carbon $date
+ * @property Carbon $date
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
- * @property-read \App\Models\Training $training
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
+ * @property-read Training $training
  */
 class ScheduledWorkout extends Model
 {
@@ -34,8 +35,8 @@ class ScheduledWorkout extends Model
     protected function casts(): array
     {
         return [
-            // We strip the time and only keep Year-Month-Day because 
-            //scheduled workouts belong to a calendar day, not an exact 
+            // We strip the time and only keep Year-Month-Day because
+            // scheduled workouts belong to a calendar day, not an exact
             // time.
             'date' => 'date:Y-m-d',
         ];

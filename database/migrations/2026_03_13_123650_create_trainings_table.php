@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Creates the table for workout plans or "trainings."
  *
- * This table stores the templates that instructors create. These are not 
- * the actual workouts users do, but rather the "blueprints" they can 
+ * This table stores the templates that instructors create. These are not
+ * the actual workouts users do, but rather the "blueprints" they can
  * follow or schedule on their calendar.
  */
 return new class extends Migration
@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 
-            // This label (like 'Beginner', 'Intermediate', or 'Advanced') 
+            // This label (like 'Beginner', 'Intermediate', or 'Advanced')
             // helps users find a plan that matches their current fitness level.
             $table->string('difficulty_level');
 
-            // We store a link to an image so the app can show a 
+            // We store a link to an image so the app can show a
             // nice preview of the workout to the user.
             $table->string('image_url')->nullable();
 

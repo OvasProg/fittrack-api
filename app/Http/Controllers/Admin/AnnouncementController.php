@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Global broadcast system for FitTrack admins.
- * * This controller manages the single active announcement 
- * that appears on all user dashboards, useful for 
+ * * This controller manages the single active announcement
+ * that appears on all user dashboards, useful for
  * maintenance alerts or new feature updates.
  */
 class AnnouncementController extends Controller
@@ -36,12 +36,12 @@ class AnnouncementController extends Controller
         AuditLog::create([
             'admin_id' => $request->user()->id,
             'action' => 'broadcast_announcement',
-            'details' => json_encode(['title' => $announcement->title])
+            'details' => json_encode(['title' => $announcement->title]),
         ]);
 
         return response()->json([
             'message' => 'Announcement broadcasted successfully!',
-            'announcement' => $announcement
+            'announcement' => $announcement,
         ], 201);
     }
 }

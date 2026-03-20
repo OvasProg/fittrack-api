@@ -1,21 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\WorkoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\OnboardingController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\WorkoutController;
-use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\TrainingController;
-
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\AnnouncementController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
-use App\Http\Controllers\Admin\ExerciseController;
-use App\Http\Controllers\Admin\AuditLogController;
 
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
@@ -33,7 +31,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // Workouts
-    // We apply a stricter throttle here because starting sessions 
+    // We apply a stricter throttle here because starting sessions
     // involves heavy database writes and adaptive logic calculations.
     Route::middleware('throttle:workouts')->prefix('workouts')->controller(WorkoutController::class)->group(function () {
         Route::post('/start', 'start');
