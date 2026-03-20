@@ -49,42 +49,33 @@ class AnalyticsController extends Controller
     {
         $user = $request->user();
 
+        // We look back 14 days. Can be changed if needed
         $chartSessions = $user->workoutSessions()
             ->whereNotNull('completed_at')
-            ->where('completed_at', '>=', Carbon::now()->subDays(7))
+            ->where('completed_at', '>=', Carbon::now()->subDays(14))
             ->with('workoutSets')
             ->get();
 
         $volumeTrend = [];
 
-        // We pre-fill the last 14 days with zeros. This ensures 
-        // the chart doesn't have "holes" if the user took 
-        // a few rest days in a row.
-        for ($i = 13; $i >= 0; $i--) {
-            $volumeTrend[Carbon::now()->subDays($i)->format('M d')] = 0;
-        }
-
         foreach ($chartSessions as $session) {
+            $dateKey = $session->completed_at->format('M d');
+
             $sessionVolume = 0;
             foreach ($session->workoutSets as $set) {
                 $sessionVolume += ($set->weight_used * $set->reps_completed);
             }
 
-            $dateKey = $session->completed_at->format('M d');
-            if (array_key_exists($dateKey, $volumeTrend)) {
-                $volumeTrend[$dateKey] += $sessionVolume;
+            if (!isset($volumeTrend[$dateKey])) {
+                $volumeTrend[$dateKey] = 0;
             }
+
+            $volumeTrend[$dateKey] += $sessionVolume;
         }
 
-        // We remove dates with 0 volume for the trend view to keep 
-        // the graph focused only on active training days.
-        $filteredVolumeTrend = array_filter($volumeTrend, function ($volume) {
-            return $volume > 0;
-        });
-
         return response()->json([
-            'labels' => array_keys($filteredVolumeTrend),
-            'data' => array_values($filteredVolumeTrend),
+            'labels' => array_keys($volumeTrend),
+            'data' => array_values($volumeTrend),
         ], 200);
     }
 
