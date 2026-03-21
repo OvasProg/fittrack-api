@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkoutStatus;
 use App\Http\Resources\AnnouncementResource;
 use App\Http\Resources\ScheduledWorkoutResource;
 use App\Http\Resources\UserResource;
@@ -75,7 +76,7 @@ class DashboardController extends Controller
                 'date' => $currentDate,
                 'day_name' => $dayName,
                 'is_today' => $i === 0,
-                'status' => $scheduledWorkout ? $scheduledWorkout->status : 'rest_day',
+                'status' => $scheduledWorkout ? $scheduledWorkout->status : WorkoutStatus::REST_DAY,
                 'training' => $scheduledWorkout ? [
                     'id' => $scheduledWorkout->training->id,
                     'name' => $scheduledWorkout->training->name,

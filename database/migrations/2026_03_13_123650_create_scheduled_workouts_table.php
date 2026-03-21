@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\WorkoutStatus;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -29,7 +31,7 @@ return new class extends Migration
             // We start every workout as 'pending'. It changes to
             // 'completed' when user finishes the session, or 'missed' if
             // the date passes and user didn't start it.
-            $table->string('status')->default('pending');
+            $table->string('status')->default(WorkoutStatus::PENDING->value);
 
             $table->timestamps();
         });

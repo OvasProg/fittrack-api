@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ExperienceLevel;
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +32,19 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+
+            // Biometric & Training Data
+            'age' => fake()->numberBetween(18, 65),
+            'weight' => fake()->randomFloat(1, 50, 120),
+            'height' => fake()->numberBetween(150, 200),
+            'training_days' => fake()->randomElements(
+                ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                3 // Picks 3 random days
+            ),
+
+            // Enums
+            'role' => UserRole::FREE,
+            'experience_level' => ExperienceLevel::BEGINNER,
         ];
     }
 
@@ -38,7 +53,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

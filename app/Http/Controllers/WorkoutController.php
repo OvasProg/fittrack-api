@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkoutStatus;
 use App\Http\Requests\FinishWorkoutRequest;
 use App\Http\Requests\StartWorkoutRequest;
 use App\Models\ScheduledWorkout;
@@ -39,7 +40,7 @@ class WorkoutController extends Controller
         if (! empty($validated['scheduled_workout_id'])) {
             ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
                 ->where('user_id', $user->id)
-                ->update(['status' => 'in_progress']);
+                ->update(['status' => WorkoutStatus::IN_PROGRESS]);
         }
 
         return response()->json([
@@ -86,7 +87,7 @@ class WorkoutController extends Controller
 
             if (! empty($validated['scheduled_workout_id'])) {
                 ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
-                    ->update(['status' => 'completed']);
+                    ->update(['status' => WorkoutStatus::COMPLETED]);
             }
 
             DB::commit();

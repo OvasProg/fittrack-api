@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ExperienceLevel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +23,7 @@ return new class extends Migration
 
             // This label (like 'Beginner', 'Intermediate', or 'Advanced')
             // helps users find a plan that matches their current fitness level.
-            $table->string('difficulty_level');
+            $table->string('difficulty_level')->default(ExperienceLevel::BEGINNER->value);
 
             // We store a link to an image so the app can show a
             // nice preview of the workout to the user.

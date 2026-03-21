@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkoutStatus;
 use App\Http\Requests\UpdateBiometricsRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Training;
@@ -79,7 +80,7 @@ class SettingsController extends Controller
         // We only touch 'pending' workouts. If a user already finished
         // a session, we leave it alone to preserve their history.
         $pendingWorkouts = $user->scheduledWorkouts()
-            ->where('status', 'pending')
+            ->where('status', WorkoutStatus::PENDING)
             ->where('date', '>=', Carbon::today()->toDateString())
             ->orderBy('date', 'asc')
             ->get();

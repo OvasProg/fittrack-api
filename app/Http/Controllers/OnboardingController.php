@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkoutStatus;
 use App\Http\Requests\StoreOnboardingRequest;
 use App\Http\Resources\UserResource;
 use App\Models\ScheduledWorkout;
@@ -72,7 +73,7 @@ class OnboardingController extends Controller
                         'user_id' => $user->id,
                         'training_id' => $training->id,
                         'date' => $currentDate->toDateString(),
-                        'status' => 'pending',
+                        'status' => WorkoutStatus::PENDING,
                     ]);
                     $trainingIndex++;
                 }

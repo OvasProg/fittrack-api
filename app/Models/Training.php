@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ExperienceLevel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -33,6 +34,13 @@ class Training extends Model
         'difficulty_level',
         'image_url',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'difficulty_level' => ExperienceLevel::class,
+        ];
+    }
 
     public function exercises(): BelongsToMany
     {

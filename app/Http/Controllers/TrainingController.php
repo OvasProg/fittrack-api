@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ExperienceLevel;
 use App\Http\Resources\TrainingResource;
 use App\Models\Training;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +27,7 @@ class TrainingController extends Controller
         if ($request->has('level')) {
             $level = $request->query('level');
 
-            if (in_array($level, ['Beginner', 'Intermediate', 'Advanced'])) {
+            if (in_array($level, array_column(ExperienceLevel::cases(), 'value'))) {
                 $query->where('difficulty_level', $level);
             }
         }

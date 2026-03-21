@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ExperienceLevel;
 use App\Models\Exercise;
 use App\Models\Training;
 use Illuminate\Database\Seeder;
@@ -43,7 +44,7 @@ class FitnessDataSeeder extends Seeder
             // --- BEGINNER ---
             [
                 'name' => 'Full Body Foundation A',
-                'difficulty_level' => 'Beginner',
+                'difficulty_level' => ExperienceLevel::BEGINNER,
                 'description' => 'A basic introduction to compound movements.',
                 'routine' => [
                     ['exercise' => 'Barbell Squat', 'sets' => 3, 'reps' => 10],
@@ -53,7 +54,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Full Body Foundation B',
-                'difficulty_level' => 'Beginner',
+                'difficulty_level' => ExperienceLevel::BEGINNER,
                 'description' => 'Secondary full body day to build baseline strength.',
                 'routine' => [
                     ['exercise' => 'Romanian Deadlift', 'sets' => 3, 'reps' => 10],
@@ -63,7 +64,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Upper Body Starter',
-                'difficulty_level' => 'Beginner',
+                'difficulty_level' => ExperienceLevel::BEGINNER,
                 'description' => 'Upper body focus for new lifters.',
                 'routine' => [
                     ['exercise' => 'Barbell Bench Press', 'sets' => 3, 'reps' => 10],
@@ -73,7 +74,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Lower Body Starter',
-                'difficulty_level' => 'Beginner',
+                'difficulty_level' => ExperienceLevel::BEGINNER,
                 'description' => 'Lower body focus for new lifters.',
                 'routine' => [
                     ['exercise' => 'Leg Press', 'sets' => 3, 'reps' => 12],
@@ -83,7 +84,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Core & Conditioning',
-                'difficulty_level' => 'Beginner',
+                'difficulty_level' => ExperienceLevel::BEGINNER,
                 'description' => 'Light day focusing on core stability.',
                 'routine' => [
                     ['exercise' => 'Cable Crunch', 'sets' => 3, 'reps' => 15],
@@ -94,7 +95,7 @@ class FitnessDataSeeder extends Seeder
             // --- INTERMEDIATE ---
             [
                 'name' => 'Push Day (Hypertrophy)',
-                'difficulty_level' => 'Intermediate',
+                'difficulty_level' => ExperienceLevel::INTERMEDIATE,
                 'description' => 'Chest, shoulders, and triceps focused on muscle growth.',
                 'routine' => [
                     ['exercise' => 'Barbell Bench Press', 'sets' => 4, 'reps' => 8],
@@ -106,7 +107,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Pull Day (Hypertrophy)',
-                'difficulty_level' => 'Intermediate',
+                'difficulty_level' => ExperienceLevel::INTERMEDIATE,
                 'description' => 'Back and biceps focused on muscle growth.',
                 'routine' => [
                     ['exercise' => 'Barbell Row', 'sets' => 4, 'reps' => 8],
@@ -117,7 +118,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Leg Day (Hypertrophy)',
-                'difficulty_level' => 'Intermediate',
+                'difficulty_level' => ExperienceLevel::INTERMEDIATE,
                 'description' => 'Quad and hamstring focus.',
                 'routine' => [
                     ['exercise' => 'Barbell Squat', 'sets' => 4, 'reps' => 8],
@@ -128,7 +129,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Upper Body Power',
-                'difficulty_level' => 'Intermediate',
+                'difficulty_level' => ExperienceLevel::INTERMEDIATE,
                 'description' => 'Heavy upper body compound movements.',
                 'routine' => [
                     ['exercise' => 'Barbell Bench Press', 'sets' => 5, 'reps' => 5],
@@ -138,7 +139,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Lower Body Power',
-                'difficulty_level' => 'Intermediate',
+                'difficulty_level' => ExperienceLevel::INTERMEDIATE,
                 'description' => 'Heavy lower body compound movements.',
                 'routine' => [
                     ['exercise' => 'Barbell Squat', 'sets' => 5, 'reps' => 5],
@@ -150,7 +151,7 @@ class FitnessDataSeeder extends Seeder
             // --- ADVANCED ---
             [
                 'name' => 'Push (Strength Focus)',
-                'difficulty_level' => 'Advanced',
+                'difficulty_level' => ExperienceLevel::ADVANCED,
                 'description' => 'Maximal load pushing movements.',
                 'routine' => [
                     ['exercise' => 'Barbell Bench Press', 'sets' => 5, 'reps' => 3],
@@ -160,7 +161,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Pull (Strength Focus)',
-                'difficulty_level' => 'Advanced',
+                'difficulty_level' => ExperienceLevel::ADVANCED,
                 'description' => 'Maximal load pulling movements.',
                 'routine' => [
                     ['exercise' => 'Conventional Deadlift', 'sets' => 5, 'reps' => 3],
@@ -170,7 +171,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Legs (Strength Focus)',
-                'difficulty_level' => 'Advanced',
+                'difficulty_level' => ExperienceLevel::ADVANCED,
                 'description' => 'Maximal load leg movements.',
                 'routine' => [
                     ['exercise' => 'Barbell Squat', 'sets' => 5, 'reps' => 3],
@@ -180,7 +181,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Arnold Split: Chest & Back',
-                'difficulty_level' => 'Advanced',
+                'difficulty_level' => ExperienceLevel::ADVANCED,
                 'description' => 'High volume antagonist supersets.',
                 'routine' => [
                     ['exercise' => 'Barbell Bench Press', 'sets' => 4, 'reps' => 8],
@@ -191,7 +192,7 @@ class FitnessDataSeeder extends Seeder
             ],
             [
                 'name' => 'Arnold Split: Shoulders & Arms',
-                'difficulty_level' => 'Advanced',
+                'difficulty_level' => ExperienceLevel::ADVANCED,
                 'description' => 'High volume accessory targeting.',
                 'routine' => [
                     ['exercise' => 'Overhead Press', 'sets' => 4, 'reps' => 8],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class AnalyticsController extends Controller
         $user = $request->user();
 
         // This is a "Pro" feature
-        if ($user->role === 'free') {
+        if ($user->role === UserRole::FREE) {
             return response()->json([
                 'message' => 'Upgrade to Pro to view detailed muscle distribution.',
             ], 403);

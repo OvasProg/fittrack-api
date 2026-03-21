@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\WorkoutSession;
@@ -22,8 +23,8 @@ class DashboardController extends Controller
     public function index(Request $request): JsonResponse
     {
         $totalUsers = User::count();
-        $proUsers = User::where('role', 'pro')->count();
-        $freeUsers = User::where('role', 'free')->count();
+        $proUsers = User::where('role', UserRole::PRO)->count();
+        $freeUsers = User::where('role', UserRole::FREE)->count();
 
         $weeklyWorkouts = WorkoutSession::whereNotNull('completed_at')
             ->where('completed_at', '>=', Carbon::now()->subDays(7))

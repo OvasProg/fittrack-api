@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ExperienceLevel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -32,12 +33,12 @@ return new class extends Migration
             // We default to 'Beginner' to ensure the adaptive algorithm
             // doesn't accidentally assign workouts that are too hard for a
             // new user.
-            $table->string('experience_level')->default('Beginner');
+            $table->string('experience_level')->default(ExperienceLevel::BEGINNER->value);
 
             // New signups get a basic 'free' role by default. An admin or
             // payment system is required to upgrade them to an instructor
             // or premium role.
-            $table->string('role')->default('free');
+            $table->string('role')->default(\App\Enums\UserRole::FREE->value);
 
             // We store this as JSON so a user can easily save a list of
             // multiple preferred workout days, like ["Monday",

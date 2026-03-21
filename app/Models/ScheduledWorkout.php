@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\WorkoutStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -39,6 +40,7 @@ class ScheduledWorkout extends Model
             // scheduled workouts belong to a calendar day, not an exact
             // time.
             'date' => 'date:Y-m-d',
+            'status' => WorkoutStatus::class,
         ];
     }
 

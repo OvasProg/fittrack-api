@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExperienceLevel;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTrainingRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class StoreTrainingRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'difficulty_level' => 'required|string|in:Beginner,Intermediate,Advanced',
+            'difficulty_level' => ['required', 'string', Rule::enum(ExperienceLevel::class)],
             'description' => 'nullable|string',
             'image_url' => 'nullable|url',
             'exercise_ids' => 'required|array|min:1',
