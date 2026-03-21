@@ -12,9 +12,15 @@ class AdminDashboardService
 {
     public function getMetrics(): array
     {
-        $totalUsers = User::count();
-        $proUsers = User::where('role', UserRole::PRO)->count();
-        $freeUsers = User::where('role', UserRole::FREE)->count();
+        $userCounts = User::toBase()
+            ->selectRaw('count(*) as total')
+            ->selectRaw("count(case when role = ? then 1 end) as pro", [UserRole::PRO->value])
+            ->selectRaw("count(case when role = ? then 1 end) as free", [UserRole::FREE->value])
+            ->first();
+
+        $totalUsers = $userCounts->total;
+        $proUsers = $userCounts->pro;
+        $freeUsers = $userCounts->free;
 
         $weeklyWorkouts = WorkoutSession::whereNotNull('completed_at')
             ->where('completed_at', '>=', Carbon::now()->subDays(7))
