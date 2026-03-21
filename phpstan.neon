@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    # We analyze the app folder where your logic lives
+    paths:
+        - app/
+
+    # Level 5 is the "Professional" standard. 
+    # (0 is loose, 9 is extremely strict).
+    level: 5
+
+    # If you have custom magic in your models, you can ignore 
+    # specific patterns here later.
+    ignoreErrors:
+        # - '#Property .* does not exist on App\\Models\\User#'
