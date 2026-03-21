@@ -42,13 +42,13 @@ class WorkoutController extends Controller
         // Security check: Ensure the user finishing the workout
         // is the same one who started it.
         if ($session->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized access.'], 403);
+            abort(403, 'Unauthorized access.');
         }
 
         // Integrity check: Prevent users from "double-finishing"
         // a session that is already closed.
         if ($session->completed_at !== null) {
-            return response()->json(['message' => 'This workout is already completed.'], 400);
+            abort(400, 'This workout is already completed.');
         }
 
         $validated = $request->validated();
@@ -62,10 +62,7 @@ class WorkoutController extends Controller
                     ->diffInMinutes($session->completed_at),
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to save workout data.',
-                'error' => $e->getMessage(),
-            ], 500);
+            abort(500, 'Failed to save workout data.');
         }
     }
 }

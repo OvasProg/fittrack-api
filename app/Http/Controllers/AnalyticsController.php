@@ -46,9 +46,7 @@ class AnalyticsController extends Controller
 
         // This is a "Pro" feature
         if ($user->role === UserRole::FREE) {
-            return response()->json([
-                'message' => 'Upgrade to Pro to view detailed muscle distribution.',
-            ], 403);
+            abort(403, 'Upgrade to Pro to view detailed muscle distribution.');
         }
 
         $distribution = $this->analyticsService->getMuscleDistribution($user);

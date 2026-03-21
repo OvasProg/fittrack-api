@@ -51,9 +51,7 @@ class UserController extends Controller
                 'user' => new UserResource($targetUser),
             ], 200);
         } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 403);
+            abort(403, $e->getMessage());
         }
     }
 
