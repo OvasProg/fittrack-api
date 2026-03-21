@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin User
+ */
 class UserResource extends JsonResource
 {
     /**
@@ -26,10 +30,10 @@ class UserResource extends JsonResource
                 'experience_level' => $this->experience_level,
                 'training_days' => $this->training_days,
             ]),
-            'created_at' => $this->when($this->created_at, function () {
+            'created_at' => $this->when(isset($this->created_at), function () {
                 return $this->created_at->format('Y-m-d H:i:s');
             }),
-            'deleted_at' => $this->when($this->deleted_at, function () {
+            'deleted_at' => $this->when(isset($this->deleted_at), function () {
                 return $this->deleted_at->format('Y-m-d H:i:s');
             }),
         ];

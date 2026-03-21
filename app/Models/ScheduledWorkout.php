@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property int $training_id
  * @property Carbon $date
- * @property string $status
+ * @property WorkoutStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user

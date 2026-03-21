@@ -23,6 +23,7 @@ class ScheduleService
             ->with(['training'])
             ->get()
             ->keyBy(function ($item) {
+                /** @var ScheduledWorkout $item */
                 return Carbon::parse($item->date)->toDateString();
             });
 
@@ -32,6 +33,7 @@ class ScheduleService
             $currentDate = $today->copy()->addDays($i)->toDateString();
             $dayName = $today->copy()->addDays($i)->format('l');
 
+            /** @var ScheduledWorkout|null $scheduledWorkout */
             $scheduledWorkout = $schedules->get($currentDate);
 
             $calendar[] = [

@@ -10,6 +10,8 @@ parameters:
     # (0 is loose, 9 is extremely strict).
     level: 5
 
+    treatPhpDocTypesAsCertain: false
+
     # If you have custom magic in your models, you can ignore 
     # specific patterns here later.
     ignoreErrors:

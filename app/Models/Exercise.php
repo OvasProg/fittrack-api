@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property float $base_multiplier
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read TrainingExercise|null $pivot
  * @property-read Collection|Training[] $trainings
  * @property-read Collection|WorkoutSet[] $workoutSets
  */

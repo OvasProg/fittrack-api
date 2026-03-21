@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\UserRole;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,10 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role === UserRole::ADMIN) {
+        /** @var User|null $user */
+        $user = $request->user();
+
+        if ($user && $user->role === UserRole::ADMIN) {
             return $next($request);
         }
 

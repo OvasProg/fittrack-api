@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $name
  * @property string|null $description
- * @property string|null $difficulty_level
+ * @property ExperienceLevel|null $difficulty_level
  * @property string|null $image_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

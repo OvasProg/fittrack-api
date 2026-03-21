@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ExperienceLevel;
 use App\Enums\UserRole;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,15 +26,15 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $age
  * @property float|null $weight
  * @property float|null $height
- * @property string|null $experience_level
- * @property string $role
+ * @property ExperienceLevel|null $experience_level
+ * @property UserRole $role
  * @property array|null $training_days
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 

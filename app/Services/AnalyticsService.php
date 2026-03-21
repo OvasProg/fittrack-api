@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\WorkoutSession;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -23,6 +24,7 @@ class AnalyticsService
             ->get();
 
         $monthlyVolume = 0;
+        /** @var WorkoutSession $session */
         foreach ($recentSessions as $session) {
             foreach ($session->workoutSets as $set) {
                 $monthlyVolume += ($set->weight_used * $set->reps_completed);
@@ -46,6 +48,7 @@ class AnalyticsService
 
         $volumeTrend = [];
 
+        /** @var WorkoutSession $session */
         foreach ($chartSessions as $session) {
             $dateKey = $session->completed_at->format('M d');
 
