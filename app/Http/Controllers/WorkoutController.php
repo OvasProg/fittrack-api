@@ -7,6 +7,7 @@ use App\Http\Requests\FinishWorkoutRequest;
 use App\Http\Requests\StartWorkoutRequest;
 use App\Models\ScheduledWorkout;
 use App\Models\WorkoutSession;
+use App\Services\ScheduleService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -20,28 +21,14 @@ use Illuminate\Support\Facades\DB;
  */
 class WorkoutController extends Controller
 {
+    public function __construct(private ScheduleService $scheduleService) {}
+
     public function start(StartWorkoutRequest $request): JsonResponse
     {
         $validated = $request->validated();
-
         $user = $request->user();
 
-        // We create a new session record to start the "clock"
-        // for the user's training duration.
-        $session = WorkoutSession::create([
-            'user_id' => $user->id,
-            'training_id' => $validated['training_id'],
-            'started_at' => Carbon::now(),
-        ]);
-
-        // If the user started this from their calendar, we mark
-        // the scheduled item as 'in_progress' so they can't
-        // accidentally start it twice.
-        if (! empty($validated['scheduled_workout_id'])) {
-            ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
-                ->where('user_id', $user->id)
-                ->update(['status' => WorkoutStatus::IN_PROGRESS]);
-        }
+        $session = $this->scheduleService->startWorkout($user, $validated);
 
         return response()->json([
             'message' => 'Workout started successfully.',
@@ -66,31 +53,8 @@ class WorkoutController extends Controller
 
         $validated = $request->validated();
 
-        // We use a Database Transaction to ensure that either
-        // everything is saved (session and all sets) or nothing is.
-        // This prevents "ghost sessions" with no data.
-        DB::beginTransaction();
-
         try {
-            foreach ($validated['sets'] as $set) {
-                $session->workoutSets()->create([
-                    'exercise_id' => $set['exercise_id'],
-                    'set_number' => $set['set_number'],
-                    'weight_used' => $set['weight_used'],
-                    'reps_completed' => $set['reps_completed'],
-                ]);
-            }
-
-            $session->update([
-                'completed_at' => Carbon::now(),
-            ]);
-
-            if (! empty($validated['scheduled_workout_id'])) {
-                ScheduledWorkout::where('id', $validated['scheduled_workout_id'])
-                    ->update(['status' => WorkoutStatus::COMPLETED]);
-            }
-
-            DB::commit();
+            $this->scheduleService->finishWorkout($session, $validated);
 
             return response()->json([
                 'message' => 'Workout logged successfully!',
@@ -98,10 +62,6 @@ class WorkoutController extends Controller
                     ->diffInMinutes($session->completed_at),
             ], 200);
         } catch (\Exception $e) {
-            // If anything goes wrong (database error, etc.), we
-            // undo everything to keep the data clean.
-            DB::rollBack();
-
             return response()->json([
                 'message' => 'Failed to save workout data.',
                 'error' => $e->getMessage(),

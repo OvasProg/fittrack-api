@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Resources\ExerciseResource;
-use App\Models\AuditLog;
 use App\Models\Exercise;
+use App\Services\ExerciseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
  */
 class ExerciseController extends Controller
 {
+    public function __construct(private ExerciseService $exerciseService) {}
+
     public function index(): JsonResponse
     {
         $exercises = Exercise::all();
@@ -29,23 +31,9 @@ class ExerciseController extends Controller
     public function store(StoreExerciseRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $admin = $request->user();
 
-        // If no multiplier is provided, we default to 1.0
-        if (! isset($validated['base_multiplier'])) {
-            $validated['base_multiplier'] = 1.0;
-        }
-
-        $exercise = Exercise::create($validated);
-
-        // Logging
-        AuditLog::create([
-            'admin_id' => $request->user()->id,
-            'action' => 'created_exercise',
-            'details' => json_encode([
-                'exercise_id' => $exercise->id,
-                'name' => $exercise->name,
-            ]),
-        ]);
+        $exercise = $this->exerciseService->createExercise($admin, $validated);
 
         return response()->json([
             'message' => 'Exercise added to library successfully.',
@@ -55,17 +43,9 @@ class ExerciseController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        $exercise = Exercise::findOrFail($id);
-        $exerciseName = $exercise->name;
+        $admin = $request->user();
 
-        $exercise->delete();
-
-        // Logging
-        AuditLog::create([
-            'admin_id' => $request->user()->id,
-            'action' => 'deleted_exercise',
-            'details' => json_encode(['exercise_name' => $exerciseName]),
-        ]);
+        $this->exerciseService->deleteExercise($admin, $id);
 
         return response()->json([
             'message' => 'Exercise removed from library.',

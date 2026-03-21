@@ -8,6 +8,7 @@ use App\Http\Resources\ScheduledWorkoutResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkoutSessionResource;
 use App\Models\Announcement;
+use App\Services\ScheduleService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ use Illuminate\Http\Request;
  */
 class DashboardController extends Controller
 {
+    public function __construct(private ScheduleService $scheduleService) {}
+
     public function overview(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -49,41 +52,7 @@ class DashboardController extends Controller
     public function calendar(Request $request): JsonResponse
     {
         $user = $request->user();
-        $today = Carbon::today();
-        $nextWeek = Carbon::today()->addDays(6);
-
-        // We fetch the next 7 days of workouts and key them by date.
-        // This makes it much faster to look them up inside the loop below.
-        $schedules = $user->scheduledWorkouts()
-            ->whereBetween('date', [$today->toDateString(), $nextWeek->toDateString()])
-            ->with(['training'])
-            ->get()
-            ->keyBy(function ($item) {
-                return Carbon::parse($item->date)->toDateString();
-            });
-
-        $calendar = [];
-
-        // We manually loop through 7 days to ensure that "Rest Days" are
-        // also included in the response for the frontend UI to display.
-        for ($i = 0; $i < 7; $i++) {
-            $currentDate = $today->copy()->addDays($i)->toDateString();
-            $dayName = $today->copy()->addDays($i)->format('l');
-
-            $scheduledWorkout = $schedules->get($currentDate);
-
-            $calendar[] = [
-                'date' => $currentDate,
-                'day_name' => $dayName,
-                'is_today' => $i === 0,
-                'status' => $scheduledWorkout ? $scheduledWorkout->status : WorkoutStatus::REST_DAY,
-                'training' => $scheduledWorkout ? [
-                    'id' => $scheduledWorkout->training->id,
-                    'name' => $scheduledWorkout->training->name,
-                    'difficulty' => $scheduledWorkout->training->difficulty_level,
-                ] : null,
-            ];
-        }
+        $calendar = $this->scheduleService->generateCalendar($user);
 
         return response()->json($calendar, 200);
     }

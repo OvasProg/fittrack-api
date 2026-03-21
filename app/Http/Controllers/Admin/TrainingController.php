@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTrainingRequest;
 use App\Http\Resources\TrainingResource;
-use App\Models\AuditLog;
 use App\Models\Training;
+use App\Services\TrainingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
  */
 class TrainingController extends Controller
 {
+    public function __construct(private TrainingService $trainingService) {}
+
     public function index(): JsonResponse
     {
         // We include the exercises in the list so admins can
@@ -31,27 +33,9 @@ class TrainingController extends Controller
     public function store(StoreTrainingRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $admin = $request->user();
 
-        $training = Training::create([
-            'name' => $validated['name'],
-            'difficulty_level' => $validated['difficulty_level'],
-            'description' => $validated['description'] ?? null,
-            'image_url' => $validated['image_url'] ?? null,
-        ]);
-
-        // 'sync' used to manage the many-to-many
-        // relationship in the pivot table.
-        $training->exercises()->sync($validated['exercise_ids']);
-
-        // Logging
-        AuditLog::create([
-            'admin_id' => $request->user()->id,
-            'action' => 'created_training',
-            'details' => json_encode([
-                'training_id' => $training->id,
-                'name' => $training->name,
-            ]),
-        ]);
+        $training = $this->trainingService->createTraining($admin, $validated);
 
         return response()->json([
             'message' => 'Training created successfully.',
@@ -61,19 +45,9 @@ class TrainingController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        $training = Training::findOrFail($id);
-        $trainingName = $training->name;
+        $admin = $request->user();
 
-        // Note: Because of our database migration (nullOnDelete),
-        // deleting a training won't break a user's session history;
-        // it just removes the template from the catalog.
-        $training->delete();
-
-        AuditLog::create([
-            'admin_id' => $request->user()->id,
-            'action' => 'deleted_training',
-            'details' => json_encode(['training_name' => $trainingName]),
-        ]);
+        $this->trainingService->deleteTraining($admin, $id);
 
         return response()->json(['message' => 'Training deleted successfully.'], 200);
     }

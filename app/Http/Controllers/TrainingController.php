@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ExperienceLevel;
 use App\Http\Resources\TrainingResource;
 use App\Models\Training;
+use App\Services\PublicTrainingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,22 +17,12 @@ use Illuminate\Http\Request;
  */
 class TrainingController extends Controller
 {
+    public function __construct(private PublicTrainingService $trainingService) {}
+
     public function index(Request $request): JsonResponse
     {
-        $query = Training::query();
-
-        // We allow users to filter the list. If they select a
-        // level like 'Beginner', we narrow the results; otherwise,
-        // we show the full catalog.
-        if ($request->has('level')) {
-            $level = $request->query('level');
-
-            if (in_array($level, array_column(ExperienceLevel::cases(), 'value'))) {
-                $query->where('difficulty_level', $level);
-            }
-        }
-
-        $trainings = $query->get();
+        $level = $request->query('level');
+        $trainings = $this->trainingService->getTrainings($level);
 
         return response()->json([
             'trainings' => TrainingResource::collection($trainings),

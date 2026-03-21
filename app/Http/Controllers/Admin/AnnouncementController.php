@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAnnouncementRequest;
-use App\Models\Announcement;
-use App\Models\AuditLog;
+use App\Services\AnnouncementService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -16,25 +15,14 @@ use Illuminate\Http\JsonResponse;
  */
 class AnnouncementController extends Controller
 {
+    public function __construct(private AnnouncementService $announcementService) {}
+
     public function store(StoreAnnouncementRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $admin = $request->user();
 
-        // We automatically deactivate all previous announcements
-        Announcement::where('is_active', true)->update(['is_active' => false]);
-
-        $announcement = Announcement::create([
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'is_active' => true,
-        ]);
-
-        // Logging
-        AuditLog::create([
-            'admin_id' => $request->user()->id,
-            'action' => 'broadcast_announcement',
-            'details' => json_encode(['title' => $announcement->title]),
-        ]);
+        $announcement = $this->announcementService->broadcastAnnouncement($admin, $validated);
 
         return response()->json([
             'message' => 'Announcement broadcasted successfully!',
