@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Training;
+use App\Models\User;
+
+class TrainingPolicy
+{
+    /**
+     * Determine whether the user can create models.
+     */
+    public function create(User $user): bool
+    {
+        return false; // Handled by before() for ADMIN
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     */
+    public function update(User $user, Training $training): bool
+    {
+        return false; // Handled by before() for ADMIN
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, Training $training): bool
+    {
+        return false; // Handled by before() for ADMIN
+    }
+}

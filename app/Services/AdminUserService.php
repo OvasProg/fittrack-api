@@ -4,17 +4,12 @@ namespace App\Services;
 
 use App\Models\AuditLog;
 use App\Models\User;
-use Exception;
 
 class AdminUserService
 {
     public function updateRole(User $admin, int $targetUserId, string $role): User
     {
         $targetUser = User::findOrFail($targetUserId);
-
-        if ($targetUser->id === $admin->id) {
-            throw new Exception('You cannot change your own role.');
-        }
 
         $oldRole = $targetUser->role;
         $targetUser->update(['role' => $role]);

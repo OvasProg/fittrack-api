@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\AdminDashboardService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Provides high-level business metrics for the admin dashboard.
@@ -17,8 +19,10 @@ class DashboardController extends Controller
 {
     public function __construct(private AdminDashboardService $dashboardService) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        Gate::authorize('viewAdminDashboard');
+
         $metrics = $this->dashboardService->getMetrics();
 
         return response()->json([

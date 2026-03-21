@@ -14,8 +14,8 @@ class AdminDashboardService
     {
         $userCounts = User::toBase()
             ->selectRaw('count(*) as total')
-            ->selectRaw("count(case when role = ? then 1 end) as pro", [UserRole::PRO->value])
-            ->selectRaw("count(case when role = ? then 1 end) as free", [UserRole::FREE->value])
+            ->selectRaw('count(case when role = ? then 1 end) as pro', [UserRole::PRO->value])
+            ->selectRaw('count(case when role = ? then 1 end) as free', [UserRole::FREE->value])
             ->first();
 
         $totalUsers = $userCounts->total;

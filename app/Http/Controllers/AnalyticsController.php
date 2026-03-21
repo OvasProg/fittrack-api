@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\UserRole;
 use App\Services\AnalyticsService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Transforms raw workout data into meaningful fitness insights.
@@ -42,14 +40,9 @@ class AnalyticsController extends Controller
 
     public function muscleDistribution(Request $request): JsonResponse
     {
-        $user = $request->user();
+        Gate::authorize('viewProStats');
 
-        // This is a "Pro" feature
-        if ($user->role === UserRole::FREE) {
-            abort(403, 'Upgrade to Pro to view detailed muscle distribution.');
-        }
-
-        $distribution = $this->analyticsService->getMuscleDistribution($user);
+        $distribution = $this->analyticsService->getMuscleDistribution($request->user());
 
         return response()->json($distribution, 200);
     }

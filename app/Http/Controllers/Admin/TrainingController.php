@@ -9,6 +9,7 @@ use App\Models\Training;
 use App\Services\TrainingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Admin portal for managing the library of training programs.
@@ -32,6 +33,8 @@ class TrainingController extends Controller
 
     public function store(StoreTrainingRequest $request): JsonResponse
     {
+        Gate::authorize('create', Training::class);
+
         $validated = $request->validated();
         $admin = $request->user();
 
@@ -45,6 +48,9 @@ class TrainingController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
+        $training = Training::findOrFail($id);
+        Gate::authorize('delete', $training);
+
         $admin = $request->user();
 
         $this->trainingService->deleteTraining($admin, $id);

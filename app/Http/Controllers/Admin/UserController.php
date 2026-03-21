@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Services\AdminUserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Admin-only interface for managing the FitTrack user base.
@@ -42,23 +42,22 @@ class UserController extends Controller
     {
         $validated = $request->validated();
         $admin = $request->user();
+        $targetUser = User::findOrFail($id);
 
-        try {
-            $targetUser = $this->adminUserService->updateRole($admin, $id, $validated['role']);
+        Gate::authorize('updateRole', $targetUser);
 
-            return response()->json([
-                'message' => "User role updated to {$validated['role']}.",
-                'user' => new UserResource($targetUser),
-            ], 200);
-        } catch (Exception $e) {
-            abort(403, $e->getMessage());
-        }
+        $updatedUser = $this->adminUserService->updateRole($admin, $id, $validated['role']);
+
+        return response()->json([
+            'message' => "User role updated to {$validated['role']}.",
+            'user' => new UserResource($updatedUser),
+        ], 200);
     }
 
     public function restore(Request $request, $id): JsonResponse
     {
         $admin = $request->user();
-        
+
         $this->adminUserService->restoreUser($admin, $id);
 
         return response()->json([

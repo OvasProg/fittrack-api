@@ -7,8 +7,8 @@ use App\Models\ScheduledWorkout;
 use App\Models\User;
 use App\Models\WorkoutSession;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ScheduleService
 {

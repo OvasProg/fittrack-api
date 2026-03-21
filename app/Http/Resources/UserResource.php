@@ -26,10 +26,10 @@ class UserResource extends JsonResource
                 'experience_level' => $this->experience_level,
                 'training_days' => $this->training_days,
             ]),
-            'created_at' => $this->when($this->created_at, function() {
+            'created_at' => $this->when($this->created_at, function () {
                 return $this->created_at->format('Y-m-d H:i:s');
             }),
-            'deleted_at' => $this->when($this->deleted_at, function() {
+            'deleted_at' => $this->when($this->deleted_at, function () {
                 return $this->deleted_at->format('Y-m-d H:i:s');
             }),
         ];

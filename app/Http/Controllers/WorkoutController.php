@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\WorkoutStatus;
 use App\Http\Requests\FinishWorkoutRequest;
 use App\Http\Requests\StartWorkoutRequest;
-use App\Models\ScheduledWorkout;
 use App\Models\WorkoutSession;
 use App\Services\ScheduleService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * The engine for recording live workout activity.
@@ -41,9 +38,7 @@ class WorkoutController extends Controller
     {
         // Security check: Ensure the user finishing the workout
         // is the same one who started it.
-        if ($session->user_id !== $request->user()->id) {
-            abort(403, 'Unauthorized access.');
-        }
+        Gate::authorize('update', $session);
 
         // Integrity check: Prevent users from "double-finishing"
         // a session that is already closed.

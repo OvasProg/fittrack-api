@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAnnouncementRequest;
+use App\Models\Announcement;
 use App\Services\AnnouncementService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Global broadcast system for FitTrack admins.
@@ -19,6 +21,8 @@ class AnnouncementController extends Controller
 
     public function store(StoreAnnouncementRequest $request): JsonResponse
     {
+        Gate::authorize('create', Announcement::class);
+
         $validated = $request->validated();
         $admin = $request->user();
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\WorkoutStatus;
 use App\Http\Resources\AnnouncementResource;
 use App\Http\Resources\ScheduledWorkoutResource;
 use App\Http\Resources\UserResource;

@@ -2,9 +2,14 @@
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
+use App\Models\User;
+use App\Policies\AdminDashboardPolicy;
+use App\Policies\AnalyticsPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +29,20 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Implicitly grant "Super Admin" role all permissions globally
+        Gate::before(function (User $user, string $ability) {
+            if ($user->role === UserRole::ADMIN) {
+                // Admin shouldn't be able to change their own role.
+                if ($ability === 'updateRole') {
+                    return null;
+                }
+
+                return true;
+            }
+        });
+        Gate::define('viewProStats', [AnalyticsPolicy::class, 'viewProStats']);
+        Gate::define('viewAdminDashboard', [AdminDashboardPolicy::class, 'view']);
+
         // We override the default password reset URL so that users are
         // sent to our custom frontend instead of a default
         // Laravel blade view.
