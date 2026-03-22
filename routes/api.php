@@ -12,8 +12,11 @@ use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
 
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
@@ -43,6 +46,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::patch('/biometrics', 'updateBiometrics');
         Route::delete('/account', 'destroyAccount');
     });
+
+    Route::post('/subscribe', [SubscriptionController::class, 'createCheckoutSession']);
 
     // Analytics
     Route::prefix('analytics')->controller(AnalyticsController::class)->group(function () {

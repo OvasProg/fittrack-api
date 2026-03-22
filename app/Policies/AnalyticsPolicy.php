@@ -12,6 +12,6 @@ class AnalyticsPolicy
      */
     public function viewProStats(User $user): bool
     {
-        return $user->role === UserRole::PRO;
+        return $user->role === UserRole::PRO || $user->subscribed('pro');
     }
 }
