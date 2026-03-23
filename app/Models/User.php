@@ -65,6 +65,19 @@ class User extends Authenticatable
         return $this->hasMany(WorkoutSession::class);
     }
 
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        // If the user has an active Stripe subscription, 
+        // overwrite the role in the JSON response to PRO.
+        if ($this->subscribed('pro')) {
+            $array['role'] = \App\Enums\UserRole::PRO;
+        }
+
+        return $array;
+    }
+
     protected function casts(): array
     {
         return [

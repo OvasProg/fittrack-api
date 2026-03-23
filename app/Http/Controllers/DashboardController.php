@@ -11,6 +11,7 @@ use App\Services\ScheduleService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Enums\UserRole;
 
 /**
  * Handles the data needed for the user's main home screen.
@@ -40,7 +41,7 @@ class DashboardController extends Controller
         return response()->json([
             'user' => [
                 'name' => $user->name,
-                'tier' => $user->role,
+                'tier' => $user->subscribed('pro') ? UserRole::PRO : $user->role,
                 'biometrics' => (new UserResource($user))->toArray($request)['biometrics'],
             ],
             'announcement' => $globalAnnouncement ? new AnnouncementResource($globalAnnouncement) : null,

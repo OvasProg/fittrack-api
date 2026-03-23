@@ -6,6 +6,7 @@ use App\Services\AnalyticsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use App\Enums\UserRole;
 
 /**
  * Transforms raw workout data into meaningful fitness insights.
@@ -24,7 +25,7 @@ class AnalyticsController extends Controller
         $summary = $this->analyticsService->getSummary($user);
 
         return response()->json([
-            'tier' => $user->role,
+            'tier' => $user->subscribed('pro') ? UserRole::PRO : $user->role,
             'total_workouts_all_time' => $summary['total_workouts_all_time'],
             'monthly_volume_kg' => $summary['monthly_volume_kg'],
         ], 200);
