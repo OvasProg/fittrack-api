@@ -48,6 +48,7 @@ class User extends Authenticatable
         'experience_level',
         'role',
         'training_days',
+        'google_id',
     ];
 
     protected $hidden = [

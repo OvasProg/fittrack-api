@@ -6,7 +6,11 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/google/url', [GoogleAuthController::class, 'getGoogleAuthUrl']);
+Route::post('google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest')
