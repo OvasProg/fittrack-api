@@ -60,7 +60,7 @@ class ScheduleService
             'started_at' => Carbon::now(),
         ]);
 
-        if (! empty($data['scheduled_workout_id'])) {
+        if (isset($data['scheduled_workout_id'])) {
             ScheduledWorkout::where('id', $data['scheduled_workout_id'])
                 ->where('user_id', $user->id)
                 ->update(['status' => WorkoutStatus::IN_PROGRESS]);
@@ -87,7 +87,7 @@ class ScheduleService
                 'completed_at' => Carbon::now(),
             ]);
 
-            if (! empty($data['scheduled_workout_id'])) {
+            if (isset($data['scheduled_workout_id'])) {
                 ScheduledWorkout::where('id', $data['scheduled_workout_id'])
                     ->update(['status' => WorkoutStatus::COMPLETED]);
             }

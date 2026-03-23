@@ -27,7 +27,7 @@ class AnalyticsService
         /** @var WorkoutSession $session */
         foreach ($recentSessions as $session) {
             foreach ($session->workoutSets as $set) {
-                $monthlyVolume += ($set->weight_used * $set->reps_completed);
+                $monthlyVolume += $set->weight_used * $set->reps_completed;
             }
         }
 
@@ -54,7 +54,7 @@ class AnalyticsService
 
             $sessionVolume = 0;
             foreach ($session->workoutSets as $set) {
-                $sessionVolume += ($set->weight_used * $set->reps_completed);
+                $sessionVolume += $set->weight_used * $set->reps_completed;
             }
 
             if (! isset($volumeTrend[$dateKey])) {

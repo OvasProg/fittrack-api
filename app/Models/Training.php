@@ -35,13 +35,6 @@ class Training extends Model
         'image_url',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'difficulty_level' => ExperienceLevel::class,
-        ];
-    }
-
     public function exercises(): BelongsToMany
     {
         // We load default sets and reps from the pivot table because
@@ -61,5 +54,12 @@ class Training extends Model
     public function workoutSessions(): HasMany
     {
         return $this->hasMany(WorkoutSession::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'difficulty_level' => ExperienceLevel::class,
+        ];
     }
 }

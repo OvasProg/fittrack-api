@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Laravel\Sanctum\HasApiTokens;
 use Laravel\Cashier\Billable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * The main User model for the FitTrack app.
@@ -36,7 +36,7 @@ use Laravel\Cashier\Billable;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Billable;
+    use Billable, HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -55,6 +55,16 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function scheduledWorkouts(): HasMany
+    {
+        return $this->hasMany(ScheduledWorkout::class);
+    }
+
+    public function workoutSessions(): HasMany
+    {
+        return $this->hasMany(WorkoutSession::class);
+    }
 
     protected function casts(): array
     {
@@ -76,15 +86,5 @@ class User extends Authenticatable
             $user->workoutSessions()->forceDelete();
             $user->scheduledWorkouts()->forceDelete();
         });
-    }
-
-    public function scheduledWorkouts(): HasMany
-    {
-        return $this->hasMany(ScheduledWorkout::class);
-    }
-
-    public function workoutSessions(): HasMany
-    {
-        return $this->hasMany(WorkoutSession::class);
     }
 }

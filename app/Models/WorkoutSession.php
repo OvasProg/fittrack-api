@@ -34,14 +34,6 @@ class WorkoutSession extends Model
         'completed_at',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'started_at' => 'datetime',
-            'completed_at' => 'datetime',
-        ];
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -55,5 +47,13 @@ class WorkoutSession extends Model
     public function workoutSets(): HasMany
     {
         return $this->hasMany(WorkoutSet::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'datetime',
+            'completed_at' => 'datetime',
+        ];
     }
 }

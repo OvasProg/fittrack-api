@@ -33,6 +33,16 @@ class ScheduledWorkout extends Model
         'status',
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function training(): BelongsTo
+    {
+        return $this->belongsTo(Training::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -42,15 +52,5 @@ class ScheduledWorkout extends Model
             'date' => 'date:Y-m-d',
             'status' => WorkoutStatus::class,
         ];
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function training(): BelongsTo
-    {
-        return $this->belongsTo(Training::class);
     }
 }

@@ -10,16 +10,16 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\WorkoutController;
-use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 
-Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
+Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
-
     Route::get('/user', function (Request $request) {
         return $request->user()->only(['id', 'name', 'email', 'role']);
     });
@@ -65,7 +65,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
 // Admin Area
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
-
     Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
     Route::post('/announcements', [AnnouncementController::class, 'store']);

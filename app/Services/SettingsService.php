@@ -40,7 +40,7 @@ class SettingsService
         $newTrainings = Training::where('difficulty_level', $user->experience_level)->get();
         $preferredDays = $user->training_days;
 
-        if ($newTrainings->isEmpty() || empty($preferredDays)) {
+        if ($newTrainings->isEmpty() || $preferredDays === null || count($preferredDays) === 0) {
             return;
         }
 

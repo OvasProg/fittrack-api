@@ -28,7 +28,7 @@ class SettingsController extends Controller
         $result = $this->settingsService->updateBiometrics($user, $validated);
 
         return response()->json([
-            'message' => ($result['levelChanged'] || $result['daysChanged'])
+            'message' => $result['levelChanged'] || $result['daysChanged']
                 ? 'Profile updated and schedule recalculated.'
                 : 'Biometric data updated successfully.',
             'user' => new UserResource($user),

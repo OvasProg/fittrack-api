@@ -22,10 +22,7 @@ use Illuminate\Support\ServiceProvider;
  */
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
     public function boot(): void
     {
@@ -48,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         // Laravel blade view.
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url') .
-                "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+                "/password-reset/{$token}?email={$notifiable->getEmailForPasswordReset()}";
         });
 
         // This is our standard "speed limit." It prevents a single user
