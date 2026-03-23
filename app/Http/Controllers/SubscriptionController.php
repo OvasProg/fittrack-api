@@ -6,18 +6,20 @@ use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
-    public function createCheckoutSession(Request $request)
-    {
-        $user = $request->user();
-        $priceId = 'price_1TDm42Gfu8sQwcLAH219IDnM';
+  public function createCheckoutSession(Request $request)
+  {
+    $user = $request->user();
+    $priceId = config('services.stripe.pro_price_id');
 
-        $checkout = $user->newSubscription('pro', $priceId)
-            ->checkout([
-                'success_url' => 'http://localhost:5500/dashboard?success=true',
-                'cancel_url' => 'http://localhost:5500/dashboard?canceled=true',
-            ]);
+    $frontendUrl = config('app.frontend_url');
 
-        // @phpstan-ignore-next-line
-        return response()->json(['url' => $checkout->url]);
-    }
+    $checkout = $user->newSubscription('pro', $priceId)
+      ->checkout([
+        'success_url' => $frontendUrl . '/dashboard.html?success=true',
+        'cancel_url' => $frontendUrl . '/dashboard.html?canceled=true',
+      ]);
+
+    // @phpstan-ignore-next-line
+    return response()->json(['url' => $checkout->url]);
+  }
 }
