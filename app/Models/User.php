@@ -29,7 +29,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @property ExperienceLevel|null $experience_level
  * @property UserRole $role
  * @property array|null $training_days
- * @property Carbon|null $email_verified_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -69,7 +68,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'training_days' => 'array',
             'role' => UserRole::class,
