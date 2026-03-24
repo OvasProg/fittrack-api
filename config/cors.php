@@ -19,7 +19,13 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    'allowed_origins' => [
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'https://main.d2192px6mhmxad.amplifyapp.com',
+        'https://fittrack-app.online',
+        'https://www.fittrack-app.online',
+    ],
 
     'allowed_origins_patterns' => [],
 

@@ -24,7 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
         ]);
 
-        //
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*', // Exempt Stripe webhooks from CSRF verification
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
