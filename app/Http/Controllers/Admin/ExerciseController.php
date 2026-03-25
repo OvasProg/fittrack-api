@@ -10,6 +10,7 @@ use App\Services\ExerciseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Admin portal for managing the global exercise library.
@@ -24,7 +25,9 @@ class ExerciseController extends Controller
 
     public function index(): JsonResponse
     {
-        $exercises = Exercise::all();
+        $exercises = Cache::rememberForever('exercises.all', function () {
+            return Exercise::all();
+        });
 
         return response()->json(ExerciseResource::collection($exercises), 200);
     }
@@ -37,6 +40,8 @@ class ExerciseController extends Controller
         $admin = $request->user();
 
         $exercise = $this->exerciseService->createExercise($admin, $validated);
+
+        Cache::forget('exercises.all');
 
         return response()->json([
             'message' => 'Exercise added to library successfully.',
@@ -52,6 +57,8 @@ class ExerciseController extends Controller
         $admin = $request->user();
 
         $this->exerciseService->deleteExercise($admin, $id);
+
+        Cache::forget('exercises.all');
 
         return response()->json([
             'message' => 'Exercise removed from library.',

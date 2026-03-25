@@ -7,6 +7,7 @@ use App\Models\Training;
 use App\Services\PublicTrainingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Manages the public-facing library of workout plans.
@@ -29,8 +30,14 @@ class TrainingController extends Controller
         ], 200);
     }
 
-    public function show(Training $training): JsonResponse
+    public function show($id): JsonResponse
     {
+        $trainings = Cache::rememberForever('trainings.all', function () {
+            return Training::with('exercises')->get();
+        });
+
+        // Find the specific training in the cached list
+        $training = $trainings->firstWhere('id', $id);
         // We "Eager Load" the exercises here. This ensures that
         // the response includes the full list of movements,
         // preventing extra database queries on the frontend.
