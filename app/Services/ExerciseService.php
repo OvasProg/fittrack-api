@@ -8,6 +8,21 @@ use App\Models\User;
 
 class ExerciseService
 {
+    public function getAllExercises(array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        $query = Exercise::query();
+
+        if (!empty($filters['target_muscle'])) {
+            $query->where('target_muscle', 'like', '%' . $filters['target_muscle'] . '%');
+        }
+
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        return $query->paginate(10);
+    }
+
     public function createExercise(User $admin, array $data): Exercise
     {
         if (! isset($data['base_multiplier'])) {
@@ -19,6 +34,24 @@ class ExerciseService
         AuditLog::create([
             'admin_id' => $admin->id,
             'action' => 'created_exercise',
+            'details' => json_encode([
+                'exercise_id' => $exercise->id,
+                'name' => $exercise->name,
+            ]),
+        ]);
+
+        return $exercise;
+    }
+
+    public function updateExercise(User $admin, int $id, array $data): Exercise
+    {
+        $exercise = Exercise::findOrFail($id);
+
+        $exercise->update($data);
+
+        AuditLog::create([
+            'admin_id' => $admin->id,
+            'action' => 'updated_exercise',
             'details' => json_encode([
                 'exercise_id' => $exercise->id,
                 'name' => $exercise->name,
