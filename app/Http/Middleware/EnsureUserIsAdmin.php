@@ -29,9 +29,8 @@ class EnsureUserIsAdmin
             return $next($request);
         }
 
-        // We return a 404 (Not Found) instead of a 403 (Forbidden).
-        // This is a "stealth" security move so that unauthorized
-        // people don't even know the admin URL exists.
-        abort(404);
+        // We return a 403 (Forbidden) to indicate the user is
+        // authenticated but lacks the necessary permissions.
+        abort(403);
     }
 }

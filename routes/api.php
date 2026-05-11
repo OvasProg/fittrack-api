@@ -3,11 +3,10 @@
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\ExerciseController;
-use App\Http\Controllers\Admin\TrainingController as AdminTrainingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionController;
@@ -34,8 +33,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // Workouts
-    // We apply a stricter throttle here because starting sessions
-    // involves heavy database writes and adaptive logic calculations.
     Route::middleware('throttle:workouts')->prefix('workouts')->controller(WorkoutController::class)->group(function () {
         Route::post('/start', 'start');
         Route::post('/{session}/finish', 'finish');
@@ -56,14 +53,32 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/charts/muscle-distribution', 'muscleDistribution');
     });
 
-    // Trainings
-    Route::prefix('trainings')->controller(TrainingController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{training}', 'show');
+    // ------------------------------------------------------------------
+    // Curriculum Access (Authenticated Users - Read Only)
+    // ------------------------------------------------------------------
+    Route::apiResource('trainings', TrainingController::class)->only(['index', 'show']);
+    Route::apiResource('exercises', ExerciseController::class)->only(['index', 'show']);
+    Route::get('trainings/{training}/exercises', [TrainingController::class, 'exercises']);
+
+    // ------------------------------------------------------------------
+    // Curriculum Management (Admins Only - Write Access)
+    // ------------------------------------------------------------------
+    Route::middleware('admin')->group(function () {
+        // Management for Trainings (Create, Update, Delete)
+        Route::apiResource('trainings', TrainingController::class)->except(['index', 'show']);
+
+        // Management for Exercises (Create, Update, Delete)
+        Route::apiResource('exercises', ExerciseController::class)->except(['index', 'show']);
+
+        // Managing the relationship between Trainings and Exercises
+        Route::prefix('trainings/{training}')->controller(TrainingController::class)->group(function () {
+            Route::post('/exercises', 'attachExercise');
+            Route::delete('/exercises/{exercise}', 'detachExercise');
+        });
     });
 });
 
-// Admin Area
+// Admin System Area
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
@@ -76,20 +91,6 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
         Route::get('/deleted', 'trashed');
         Route::post('/{id}/restore', 'restore');
         Route::delete('/{id}/force', 'forceDelete');
-    });
-
-    // Training Management
-    Route::prefix('trainings')->controller(AdminTrainingController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/', 'store');
-        Route::delete('/{id}', 'destroy');
-    });
-
-    // Exercise Management
-    Route::prefix('exercises')->controller(ExerciseController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/', 'store');
-        Route::delete('/{id}', 'destroy');
     });
 
     Route::get('/logs', [AuditLogController::class, 'index']);
