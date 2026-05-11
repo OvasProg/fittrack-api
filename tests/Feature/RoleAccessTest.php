@@ -19,7 +19,7 @@ test('FREE role users are forbidden from accessing pro and admin endpoints', fun
 
     $this->actingAs($user)
         ->getJson('/api/admin/dashboard')
-        ->assertStatus(404);
+        ->assertStatus(403);
 });
 
 test('PRO role users can access pro features but not admin dashboards', function () {
@@ -38,7 +38,7 @@ test('PRO role users can access pro features but not admin dashboards', function
 
     $this->actingAs($user)
         ->getJson('/api/admin/dashboard')
-        ->assertStatus(404);
+        ->assertStatus(403);
 });
 
 test('ADMIN users can access admin dashboards', function () {
